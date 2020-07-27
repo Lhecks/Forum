@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_forum"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="2dp" />
+
+    <ImageView
+        android:id="@+id/image_forum_check_internet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/image_internet_description"
+        android:src="@drawable/no_internet"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/forum_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">Forum</string>
+    <string name="title_activity_forum">Forum</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_comments">Comments</string>
+    <string name="title_activity_opinion">Opinion</string>
+    <string name="title_activity_new_comment">New Comment</string>
+    <string name="title_activity_new_opinion">New Opinion</string>
+    <string name="title_activity_new_subject">New Subject</string>
+    <string name="lorem">"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo"</string>
+    <string name="volley_time_out_error">Time Out, Please Check your network and try again</string>
+    <string name="volley_parse_error">Error Parsing… Please later!</string>
+    <string name="volley_auth_fail">Authentication failed Enable to connect…</string>
+    <string name="volley_server_error">Server no found. Please! try later</string>
+    <string name="volley_network_error">No Internet … Please! Do check your network</string>
+    <string name="empty_field">Please!!! No Empty field allowed</string>
+    <string name="password_matching">Passwords do not match,\n make sure to insert the same password</string>
+    <string name="password_length">At least 6 characters of password are required</string>
+    <string name="check_internet">No Internet Detected</string>
+    <string name="user_name">Name</string>
+    <string name="user_first_name">First Name</string>
+    <string name="user_birthday">Birthday</string>
+    <string name="user_phone">Phone</string>
+    <string name="user_email">Email</string>
+    <string name="user_sex">Sex</string>
+    <string name="user_country">Country</string>
+    <string name="user_profession">Profession</string>
+    <string name="user_nationality">Nationality</string>
+    <string name="user_password">Password</string>
+    <string name="user_repeat_password">Forgot Password</string>
+    <string name="register_title">Registration</string>
+    <string name="submit_your_information">Submit Your Information</string>
+    <string name="next">Next</string>
+    <string name="got_it">Got It</string>
+    <string name="previous">Previous</string>
+    <string name="send_your_opinion">Send Your Opinion</string>
+    <string name="your_opinion">Your Opinion</string>
+    <string name="service">Service</string>
+    <string name="comment">Comment</string>
+    <string name="_500_characters">(500 characters)</string>
+    <string name="image_internet_description">This image will be visible when the network is out</string>
+    <string name="new_subject">New Subject</string>
+    <string name="new_subjects">Nouveau Sujet</string>
+    <string name="subject">Sujet</string>
+    <string name="number_of_character">(0 character)</string>
+    <string name="submit_your_subject">Soumettre le Sujet</string>
+    <string name="your_comment">Votre Commentaire</string>
+    <string name="image_for_signing_out">Image for signing out</string>
+    <string name="image_for_forum">Image for Forum</string>
+    <string name="forum">Forum</string>
+    <string name="sign_out">Sign_Out</string>
+    <string name="choose_your_hospital">Choose Your Hospital</string>
+    <string name="choose_the_service">Choose The Service</string>
+    <string name="show_the_hospital_content">Show the Hospital Content</string>
+    <string name="hospital_name_hint">Hospital</string>
+    <string name="show_the_services_content">Show the Services Content</string>
+    <string name="service_name">Nom du Service :</string>
+    <string name="select_the_city">Select the City</string>
+    <string name="add_a_new_hospital">Add a new Hospital</string>
+    <string name="add_a_new_service">Add a new Service</string>
+    <string name="add_a_new_city">Add a new City</string>
+    <string name="the_city_already_exist">The City already exist</string>
+    <string name="hospital_name">Hospital name</string>
+    <string name="hospital_already_exist">Hospital already exist</string>
+    <string name="service_already_exist">Service already exist</string>
+    <string name="hospital_address">hospital address</string>
+    <string-array name="CountriesList">
+        <item>Choose Your Country</item>
+        <item>Other</item>
+        <item>Congo</item>
+        <item>USA</item>
+        <item>Canada</item>
+        <item>Brasilia</item>
+        <item>Argentina</item>
+        <item>Spain</item>
+        <item>Australia</item>
+        <item>New Zeland</item>
+        <item>Rwanda</item>
+        <item>Kenya</item>
+        <item>Ethiopia</item>
+    </string-array>
+</resources>
