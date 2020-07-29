@@ -2,10 +2,10 @@ package com.hame.forum;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -66,10 +66,11 @@ import java.util.Map;
 
 public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private static final String TAG = NewOpinion.class.getSimpleName();
-    private static ProgressDialog mProgressDialog;
+    private View view;
+    private View parent_view;
     private SharedPreferences.Editor editor;
     private Spinner spinnerService, spinnerHospital, spinnerCity;
-    private EditText editOpinion, editCity, editService, editHospital, editHospitalAddress;
+    private EditText editOpinion;
     private ProgressBar progressBar;
     private RatingBar ratingBar;
     private TextView textHospital, textServices;
@@ -86,8 +87,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
     private SessionManager sessionManager;
     private TextView textServiceLabel;
     private Button buttonSubmit;
-    private String opinion_content, city, hospital, service, rating, id_city, city_name, id_hospitals, hospital_name, hospital_address, id_service, service_name, user_name;
-    private LinearLayout linearSpinnerCity, linearSpinnerHospital, linearSpinnerService, linearEditCity, linearEditHospital, linearEditService;
+    private String opinion_content, rating, id_city, city_name, id_hospitals,
+            hospital_name, id_service, service_name, user_name;
+    private LinearLayout linearSpinnerCity, linearSpinnerHospital, linearSpinnerService;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CommitPrefEdits")
@@ -102,27 +104,18 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-//        textHospital = findViewById(R.id.text_hospital);
         textServices = findViewById(R.id.text_service);
         spinnerCity = findViewById(R.id.spinner_city);
         spinnerHospital = findViewById(R.id.spinner_hospital);
         spinnerService = findViewById(R.id.spinner_service_hospital);
         editOpinion = findViewById(R.id.edit_for_subject_new_opinion);
-        editCity = findViewById(R.id.edit_for_city);
-        editHospital = findViewById(R.id.edit_for_hospital_name_for_other);
-        editHospitalAddress = findViewById(R.id.edit_for_hospital_address);
-        editService = findViewById(R.id.edit_for_service);
         progressBar = findViewById(R.id.progressbar_for_sending_new_opinion);
         buttonSubmit = findViewById(R.id.button_for_sending_data_new_opinion);
         ratingBar = findViewById(R.id.rating_bar);
         linearSpinnerCity = findViewById(R.id.linear_spinner_city);
         linearSpinnerHospital = findViewById(R.id.linear_spinner_hospital);
         linearSpinnerService = findViewById(R.id.linear_spinner_service);
-        linearEditCity = findViewById(R.id.linear_edit_city);
-        linearEditHospital = findViewById(R.id.linear_edit_hospital);
-        linearEditService = findViewById(R.id.linear_edit_service);
 
-//        hospital_id = hospitalItems.getIdHospital();
         String id_country = sessionManager.getUser().getId_Country();
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +125,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 rating = String.valueOf(ratingBar.getRating());
                 if (checkingInternet()) {
                     if (!opinion_content.isEmpty()) {
-//                        showMessage("Coming Very Soon");
                         sendOpinion();
                         hideKeyboardSoft();
                     } else {
@@ -146,14 +138,13 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             }
         });
 
+
         if (checkingInternet()) {
-//            getHospitals(id_country);
             getCities(id_country);
         } else {
             showMessage(getString(R.string.check_internet));
         }
 
-//        spinnerService.setOnItemSelectedListener(this);
         spinnerCity.setOnItemSelectedListener(this);
 
         hideKeyboardSoft();
@@ -188,9 +179,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 linearSpinnerCity.setVisibility(View.GONE);
                                 linearSpinnerHospital.setVisibility(View.GONE);
                                 linearSpinnerService.setVisibility(View.GONE);
-                                linearEditCity.setVisibility(View.VISIBLE);
-                                linearEditHospital.setVisibility(View.VISIBLE);
-                                linearEditService.setVisibility(View.VISIBLE);
+//                                linearEditCity.setVisibility(View.VISIBLE);
+//                                linearEditHospital.setVisibility(View.VISIBLE);
+//                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                             }
                         }
@@ -251,13 +242,17 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 spinnerHospital.setAdapter(customArrayAdapterHospital);
                                 if (id_hospitals != null) {
                                     getServices(id_hospitals);
+                                    linearSpinnerService.setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 progressBar.setVisibility(View.VISIBLE);
                                 linearSpinnerHospital.setVisibility(View.GONE);
                                 linearSpinnerService.setVisibility(View.GONE);
-                                linearEditHospital.setVisibility(View.VISIBLE);
-                                linearEditService.setVisibility(View.VISIBLE);
+                                serviceItemsArrayList.clear();
+                                snackBarFloating();
+
+//                                linearEditHospital.setVisibility(View.VISIBLE);
+//                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                             }
                         }
@@ -276,7 +271,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             protected Map<String, String> getParams() {
                 Map<String, String> hashMap = new HashMap<>();
                 hashMap.put("id_city", city_id);
-//                hashMap.put(HOSPITAL_ID, String.valueOf(hospital_id));
                 return hashMap;
             }
         };
@@ -311,24 +305,23 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 customArrayAdapterService = new CustomArrayAdapterService(getApplicationContext(), R.layout.item_service_hospital, serviceItemsArrayList);
                                 spinnerService.setAdapter(customArrayAdapterService);
                             } else {
+                                showMessage("empty service");
                                 progressBar.setVisibility(View.VISIBLE);
                                 linearSpinnerService.setVisibility(View.GONE);
-                                linearEditService.setVisibility(View.VISIBLE);
+//                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
+                                snackBarFloating();
                             }
                         }
-
 //                        spinnerService.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //                            @Override
 //                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//
 //                                id_service = ((TextView)view.findViewById(R.id.id_service_hospital)).getText().toString();
 //                                service_name = ((TextView)view.findViewById(R.id.name_hospital)).getText().toString();
 //                                showMessage(id_service + " : " + service_name);
 //                            }
 //                            @Override
 //                            public void onNothingSelected(AdapterView<?> adapterView) {
-//
 //                            }
 //                        });
                     }
@@ -346,7 +339,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             protected Map<String, String> getParams() {
                 Map<String, String> hashMap = new HashMap<>();
                 hashMap.put("id_hospital", hospital_id);
-//                hashMap.put(HOSPITAL_ID, String.valueOf(hospital_id));
                 return hashMap;
             }
         };
@@ -355,7 +347,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
         id_city = String.valueOf(cityItemsArrayList.get(i).getIdCity());
 //        id_hospitals = ((TextView)view.findViewById(R.id.id_hospital)).getText().toString();
         city_name = ((TextView) view.findViewById(R.id.name_city)).getText().toString();
@@ -364,6 +355,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             getHospital(id_city);
             linearSpinnerHospital.setVisibility(View.VISIBLE);
         } else {
+            linearSpinnerHospital.setVisibility(View.GONE);
+            hospitalItemsArrayList.clear();
+            snackBarFloating();
             showMessage("No city found from outside method cities");
         }
     }
@@ -426,119 +420,25 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         getStringRequeue(stringRequest);
     }
 
-    private void sendCiy() {
-        buttonSubmit.setVisibility(View.GONE);
-        city_name = editCity.getText().toString();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_CITY, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v(TAG, "Response: " + response);
-                if (response.trim().equalsIgnoreCase("0")) {
-                    Log.v(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("City Well Inserted");
-                    hideKeyboardSoft();
-                } else {
-                    Log.e(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new City... Try Later");
-                    buttonSubmit.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getErrors(error);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> map = new HashMap<>();
-                map.put("city_name", city_name);
-                map.put("id", sessionManager.getUser().getId_Country());
-                map.put("nom", sessionManager.getUser().getUser_country());
-                return map;
-            }
-        };
-        getStringRequeue(stringRequest);
-    }
+    private void snackBarFloating() {
+        final Snackbar snackbar = Snackbar.make(parent_view, "", Snackbar.LENGTH_LONG);
+        //inflate view
+        View custom_view = getLayoutInflater().inflate(R.layout.snackbar_toast_floating, null);
 
-    private void sendHospital() {
-        buttonSubmit.setVisibility(View.GONE);
-        hospital_name = editHospital.getText().toString();
-        hospital_address = editHospitalAddress.getText().toString();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL, new Response.Listener<String>() {
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackBarView.setPadding(0, 0, 0, 0);
+        (custom_view.findViewById(R.id.tv_undo)).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(String response) {
-                Log.v(TAG, "Response: " + response);
-                if (response.trim().equalsIgnoreCase("0")) {
-                    Log.v(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Hospital Well Inserted");
-                    hideKeyboardSoft();
-                } else {
-                    Log.e(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new Hospital... Try Later");
-                    buttonSubmit.setVisibility(View.VISIBLE);
-                }
+            public void onClick(View v) {
+                snackbar.dismiss();
+                Toast.makeText(getApplicationContext(), "UNDO Clicked!", Toast.LENGTH_SHORT).show();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getErrors(error);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> map = new HashMap<>();
-                map.put("hospital_name", hospital_name);
-                map.put("hospital_address", hospital_address);
-                map.put("id_city", id_city);
-                map.put("city_name", city_name);
-                return map;
-            }
-        };
-        getStringRequeue(stringRequest);
-    }
+        });
 
-    private void sendService() {
-        buttonSubmit.setVisibility(View.GONE);
-        service_name = editService.getText().toString();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL_SERVICES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v(TAG, "Response: " + response);
-                if (response.trim().equalsIgnoreCase("0")) {
-                    Log.v(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Service Well Inserted");
-                    hideKeyboardSoft();
-                } else {
-                    Log.e(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new Service... Try Later");
-                    buttonSubmit.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getErrors(error);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> map = new HashMap<>();
-                map.put("service_name", service_name);
-                map.put("id_hospital", id_hospitals);
-                map.put("hospital_name", hospital_name);
-                return map;
-            }
-        };
-        getStringRequeue(stringRequest);
+        snackBarView.addView(custom_view, 0);
+        snackbar.show();
     }
-
 
     private void getStringRequeue(StringRequest stringRequest) {
         RequestQueue requestQueue = Volley.newRequestQueue(NewOpinion.this);
@@ -595,14 +495,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         return netInfo != null && netInfo.isAvailable() && netInfo.isConnectedOrConnecting();
     }
 
-    public boolean isVisible() {
-        boolean b = false;
-        if (b) {
-            linearEditCity.setVisibility(View.VISIBLE);
-        }
-        return false;
-    }
-
     private void hideKeyboardSoft() {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
@@ -610,5 +502,4 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
     private void showMessage(String message) {
         Toast.makeText(NewOpinion.this, message, Toast.LENGTH_SHORT).show();
     }
-
 }

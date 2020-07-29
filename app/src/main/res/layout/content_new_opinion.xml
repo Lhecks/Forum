@@ -52,37 +52,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linear_edit_city"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/circle_bg_color">
-
-                    <EditText
-                        android:id="@+id/edit_for_city"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/add_a_new_city"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/text_city_exist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/the_city_already_exist" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/linear_spinner_hospital"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -117,67 +86,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/linear_edit_hospital"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/circle_bg_color">
-
-                    <EditText
-                        android:id="@+id/edit_for_hospital"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hospital_name"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/circle_bg_color">
-
-                    <EditText
-                        android:id="@+id/edit_for_hospital_address"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/hospital_address"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/text_hospital_exist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/hospital_already_exist" />
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_for_hospital"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/circle_bg_color"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/edit_for_hospital_name_for_other"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hospital_name_hint"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <TextView
                 android:id="@+id/text_service"
                 android:layout_width="wrap_content"
@@ -193,7 +101,6 @@
                 android:layout_marginTop="8dp"
                 android:orientation="vertical"
                 android:visibility="gone">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -204,7 +111,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:background="@drawable/circle_bg_color">
-
                     <Spinner
                         android:id="@+id/spinner_service_hospital"
                         android:layout_width="match_parent"
@@ -218,37 +124,6 @@
                     android:layout_gravity="end"
                     android:layout_marginTop="8dp"
                     android:text="@string/add_a_new_service" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linear_edit_service"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/text_input_for_service_hospital"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/circle_bg_color">
-
-                    <EditText
-                        android:id="@+id/edit_for_service"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/service"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/text_service_exist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:text="@string/service_already_exist" />
             </LinearLayout>
 
             <TextView
@@ -269,6 +144,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
+                    android:outlineSpotShadowColor="@color/colorPrimaryDark"
                     android:inputType="textLongMessage|text|textMultiLine"
                     android:maxLength="500" />
             </com.google.android.material.textfield.TextInputLayout>
