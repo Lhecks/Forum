@@ -1,0 +1,6 @@
+# Forum
+Forum and Opinion Adroid-Java App.
+In this project we have two mains parts, the first part is the Forum where people can create a subjects and others can come a give a comment.
+In the Second part we have Opinion about something or a subject, in this part we have spinners, RatingBar and a RecycleView.
+I have a Sign-Up part and sign-In part for user.
+I have used Volley library and MySQL to make the interaction between the app and the database. You'll see the use of RatingBar and Spinners.
