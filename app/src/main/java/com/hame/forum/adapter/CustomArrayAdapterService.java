@@ -21,7 +21,7 @@ public class CustomArrayAdapterService extends ArrayAdapter<String> {
 
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private final List<ServiceItems> items;
+    private final List<ServiceItems> itemsServices;
     private final int mResource;
 
     public CustomArrayAdapterService(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
@@ -29,7 +29,13 @@ public class CustomArrayAdapterService extends ArrayAdapter<String> {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mResource = resource;
-        items = objects;
+        itemsServices = objects;
+    }
+
+    public void updateServiceItems(List<ServiceItems> serviceItems) {
+        itemsServices.clear();
+        itemsServices.addAll(serviceItems);
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -48,7 +54,7 @@ public class CustomArrayAdapterService extends ArrayAdapter<String> {
 
         TextView id_service_hospital = view.findViewById(R.id.id_service_hospital);
         TextView nameServiceHospital = view.findViewById(R.id.name_service_hospital);
-        ServiceItems serviceItems = items.get(position);
+        ServiceItems serviceItems = itemsServices.get(position);
 
         id_service_hospital.setText(String.valueOf(serviceItems.getIdService()));
         nameServiceHospital.setText(serviceItems.getServiceName());

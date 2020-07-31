@@ -111,7 +111,7 @@
                     android:background="@drawable/circle_bg_color">
 
                     <EditText
-                        android:id="@+id/edit_for_hospital_address"
+                        android:id="@+id/edit_for_hospital_address_bottom_sheet_city"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hospital_address"
@@ -144,6 +144,14 @@
                 android:background="@drawable/green_onclick_white"
                 android:text="Send"
                 android:textColor="@color/colorWhite" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_bottom_sheet_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/spacing_x_medium"
+                android:visibility="gone" />
         </RelativeLayout>
 
 

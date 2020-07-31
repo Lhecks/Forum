@@ -159,6 +159,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 Log.v(TAG + " Getting Cities item", response + " City Answers");
                 try {
                     JSONArray jsonArray = new JSONArray(response);
+//                    if (id_city == null ){
+//                        showMessage("Service list empty city:::");
+//                    }else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
                         showMessage("Error while getting City");
@@ -170,15 +173,14 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                     jsonObject.getString("city_name"),
                                     jsonObject.getString("nom"));
                             cityItemsArrayList.add(cityItems);
-
                             if (cityItemsArrayList.size() > 0) {
                                 customArrayAdapterCity = new CustomArrayAdapterCity(getApplicationContext(), R.layout.item_city, cityItemsArrayList);
                                 spinnerCity.setAdapter(customArrayAdapterCity);
                             } else {
-                                progressBar.setVisibility(View.VISIBLE);
-                                linearSpinnerCity.setVisibility(View.GONE);
-                                linearSpinnerHospital.setVisibility(View.GONE);
-                                linearSpinnerService.setVisibility(View.GONE);
+//                                progressBar.setVisibility(View.VISIBLE);
+//                                linearSpinnerCity.setVisibility(View.GONE);
+//                                linearSpinnerHospital.setVisibility(View.GONE);
+//                                linearSpinnerService.setVisibility(View.GONE);
 //                                linearEditCity.setVisibility(View.VISIBLE);
 //                                linearEditHospital.setVisibility(View.VISIBLE);
 //                                linearEditService.setVisibility(View.VISIBLE);
@@ -219,11 +221,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                     JSONArray jsonArray = new JSONArray(response);
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
-//                        if (id_city != null){
-//                            showMessage("No hospitals registered for this city ==:: " + id_city);
-//                        }else{
                         showMessage("Error while getting Hospital");
-//                        }
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -236,6 +234,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                             id_hospitals = String.valueOf(hospitalItemsArrayList.get(i).getIdHospital());
                             hospital_name = String.valueOf(hospitalItemsArrayList.get(i).getHospitalName());
 
+//                            hospitalItemsArrayList.notifyAll();
                             showMessage("Item :" + city_id + " - " + cityItems.getCityName());
                             if (hospitalItemsArrayList.size() > 0) {
                                 customArrayAdapterHospital = new CustomArrayAdapterHospital(getApplicationContext(), R.layout.item_hospital, hospitalItemsArrayList);
@@ -246,15 +245,16 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 }
                             } else {
                                 progressBar.setVisibility(View.VISIBLE);
-                                linearSpinnerHospital.setVisibility(View.GONE);
-                                linearSpinnerService.setVisibility(View.GONE);
-                                serviceItemsArrayList.clear();
-                                snackBarFloating();
+//                                linearSpinnerHospital.setVisibility(View.GONE);
+//                                linearSpinnerService.setVisibility(View.GONE);
+//                                serviceItemsArrayList.clear();
+//                                snackBarFloating();
 
 //                                linearEditHospital.setVisibility(View.VISIBLE);
 //                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                             }
+//                            customArrayAdapterHospital
                         }
                     }
                 } catch (JSONException e) {
@@ -287,9 +287,14 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 Log.v(TAG + "Getting Services item", response + " Services Answers");
                 try {
                     JSONArray jsonArray = new JSONArray(response);
+//                    if (id_service == null ){
+//                        showMessage("Service list empty Service:::");
+//                        linearSpinnerService.setVisibility(View.VISIBLE);
+//                    } else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
                         showMessage("Error while getting Hospital");
+//                        snackBarFloating();
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -306,11 +311,11 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 spinnerService.setAdapter(customArrayAdapterService);
                             } else {
                                 showMessage("empty service");
-                                progressBar.setVisibility(View.VISIBLE);
-                                linearSpinnerService.setVisibility(View.GONE);
+//                                progressBar.setVisibility(View.VISIBLE);
+//                                linearSpinnerService.setVisibility(View.GONE);
 //                                linearEditService.setVisibility(View.VISIBLE);
-                                progressBar.setVisibility(View.GONE);
-                                snackBarFloating();
+//                                progressBar.setVisibility(View.GONE);
+//                                snackBarFloating();
                             }
                         }
 //                        spinnerService.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -356,14 +361,15 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             linearSpinnerHospital.setVisibility(View.VISIBLE);
         } else {
             linearSpinnerHospital.setVisibility(View.GONE);
-            hospitalItemsArrayList.clear();
-            snackBarFloating();
+//            hospitalItemsArrayList.clear();
+//            snackBarFloating();
             showMessage("No city found from outside method cities");
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
+
 
     }
 

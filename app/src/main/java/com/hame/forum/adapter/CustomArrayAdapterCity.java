@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.hame.forum.R;
 import com.hame.forum.models.CityItems;
 import com.hame.forum.models.HospitalItems;
+import com.hame.forum.models.ServiceItems;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
 
     private final LayoutInflater mInflater;
     private final Context myContext;
-    private final List<CityItems> items;
+    private final List<CityItems> cityItem;
     private final int myResource;
 
     public CustomArrayAdapterCity(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
@@ -29,7 +30,13 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
         myContext = context;
         mInflater = LayoutInflater.from(context);
         myResource = resource;
-        items = objects;
+        cityItem = objects;
+    }
+
+    public void updateServiceItems(List<CityItems> cityItemsList) {
+        cityItem.clear();
+        cityItem.addAll(cityItemsList);
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -48,7 +55,7 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
 
         TextView id_city = view.findViewById(R.id.id_city);
         TextView name_city = view.findViewById(R.id.name_city);
-        CityItems cityItems = items.get(position);
+        CityItems cityItems = cityItem.get(position);
 
         id_city.setText(String.valueOf(cityItems.getIdCity()));
         name_city.setText(cityItems.getCityName());

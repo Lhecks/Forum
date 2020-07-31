@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.hame.forum.R;
 import com.hame.forum.models.CountryItems;
 import com.hame.forum.models.HospitalItems;
+import com.hame.forum.models.ServiceItems;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class CustomArrayAdapterHospital extends ArrayAdapter<String> {
 
     private final LayoutInflater mInflater;
     private final Context myContext;
-    private final List<HospitalItems> items;
+    private final List<HospitalItems> itemsListHospitals;
     private final int myResource;
 
     public CustomArrayAdapterHospital(@NonNull Context context, @LayoutRes int resource, @NonNull List objects) {
@@ -29,7 +30,13 @@ public class CustomArrayAdapterHospital extends ArrayAdapter<String> {
         myContext = context;
         mInflater = LayoutInflater.from(context);
         myResource = resource;
-        items = objects;
+        itemsListHospitals = objects;
+    }
+
+    public void updateServiceItems(List<HospitalItems> hospitalItem) {
+        itemsListHospitals.clear();
+        itemsListHospitals.addAll(hospitalItem);
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -48,7 +55,7 @@ public class CustomArrayAdapterHospital extends ArrayAdapter<String> {
 
         TextView id_hospital = view.findViewById(R.id.id_hospital);
         TextView name_hospital = view.findViewById(R.id.name_hospital);
-        HospitalItems hospitalItems = items.get(position);
+        HospitalItems hospitalItems = itemsListHospitals.get(position);
 
         id_hospital.setText(String.valueOf(hospitalItems.getIdHospital()));
         name_hospital.setText(hospitalItems.getHospitalName());
