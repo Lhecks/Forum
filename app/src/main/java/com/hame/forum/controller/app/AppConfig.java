@@ -3,8 +3,8 @@ package com.hame.forum.controller.app;
 public class AppConfig {
     // Server urls Links
 
-    public static final String URL = "http://10.5.51.35/james/";
-//    public static final String URL = "http://192.168.43.253/james/";
+//    public static final String URL = "http://10.5.51.35/james/";
+public static final String URL = "http://192.168.43.253/james/";
 
     //    Server user Register url
     public static String URL_REGISTER = URL + "register.php";

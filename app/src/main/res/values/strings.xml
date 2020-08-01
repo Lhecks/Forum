@@ -71,6 +71,12 @@
     <string name="hospital_address">hospital address</string>
     <string name="add">ADD</string>
     <string name="ad_text">Click the \"ADD\" button to add anew Item</string>
+    <string name="new_hospital_bottom_sheet">New Hospital</string>
+    <string name="send_your_request">Send Your Request</string>
+    <string name="new_service_bottom_sheet">New Service</string>
+    <string name="new_city_bottom_sheet">New City</string>
+    <string name="close_bottom_sheet_fragment">Image to close the bottomSheet Fragment</string>
+    <string name="hospital_name_opinion">Nom de L\'hopital :</string>
     <string-array name="CountriesList">
         <item>Choose Your Country</item>
         <item>Other</item>

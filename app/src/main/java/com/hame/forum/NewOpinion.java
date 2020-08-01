@@ -26,6 +26,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hame.forum.adapter.CustomArrayAdapterCity;
 import com.hame.forum.adapter.CustomArrayAdapterHospital;
 import com.hame.forum.adapter.CustomArrayAdapterService;
+import com.hame.forum.bottomSheet.FragmentBottomCity;
+import com.hame.forum.bottomSheet.FragmentBottomSheetHospital;
+import com.hame.forum.bottomSheet.FragmentBottomSheetService;
 import com.hame.forum.controller.app.AppConfig;
 import com.hame.forum.controller.utils.Constant;
 import com.hame.forum.controller.utils.SessionManager;
@@ -73,7 +76,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
     private EditText editOpinion;
     private ProgressBar progressBar;
     private RatingBar ratingBar;
-    private TextView textHospital, textServices;
     private CityItems cityItems;
     private ArrayList<CityItems> cityItemsArrayList;
     private CustomArrayAdapterCity customArrayAdapterCity;
@@ -85,7 +87,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
     private CustomArrayAdapterService customArrayAdapterService;
     private String country_name;
     private SessionManager sessionManager;
-    private TextView textServiceLabel;
     private Button buttonSubmit;
     private String opinion_content, rating, id_city, city_name, id_hospitals,
             hospital_name, id_service, service_name, user_name;
@@ -104,7 +105,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        textServices = findViewById(R.id.text_service);
+        TextView textCity = findViewById(R.id.add_city_text);
+        TextView textHospital = findViewById(R.id.add_hospital_text);
+        TextView textServices = findViewById(R.id.add_service_text);
         spinnerCity = findViewById(R.id.spinner_city);
         spinnerHospital = findViewById(R.id.spinner_hospital);
         spinnerService = findViewById(R.id.spinner_service_hospital);
@@ -137,6 +140,26 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 }
             }
         });
+        textCity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetCity();
+            }
+        });
+
+        textHospital.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetHospital();
+            }
+        });
+
+        textServices.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showBottomSheetService();
+            }
+        });
 
 
         if (checkingInternet()) {
@@ -148,6 +171,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         spinnerCity.setOnItemSelectedListener(this);
 
         hideKeyboardSoft();
+//        showBottomSheetCity();
+//        showBottomSheetHospital();
+//        showBottomSheetService();
     }
 
     private void getCities(final String id_country) {
@@ -164,6 +190,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
 //                    }else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
+                        showBottomSheetCity();
                         showMessage("Error while getting City");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -177,6 +204,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 customArrayAdapterCity = new CustomArrayAdapterCity(getApplicationContext(), R.layout.item_city, cityItemsArrayList);
                                 spinnerCity.setAdapter(customArrayAdapterCity);
                             } else {
+                                showMessage("No City here First");
 //                                progressBar.setVisibility(View.VISIBLE);
 //                                linearSpinnerCity.setVisibility(View.GONE);
 //                                linearSpinnerHospital.setVisibility(View.GONE);
@@ -221,6 +249,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                     JSONArray jsonArray = new JSONArray(response);
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
+                        showBottomSheetHospital();
                         showMessage("Error while getting Hospital");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -235,7 +264,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                             hospital_name = String.valueOf(hospitalItemsArrayList.get(i).getHospitalName());
 
 //                            hospitalItemsArrayList.notifyAll();
-                            showMessage("Item :" + city_id + " - " + cityItems.getCityName());
+//                            showMessage("Item :" + city_id + " - " + cityItems.getCityName());
                             if (hospitalItemsArrayList.size() > 0) {
                                 customArrayAdapterHospital = new CustomArrayAdapterHospital(getApplicationContext(), R.layout.item_hospital, hospitalItemsArrayList);
                                 spinnerHospital.setAdapter(customArrayAdapterHospital);
@@ -244,6 +273,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                     linearSpinnerService.setVisibility(View.VISIBLE);
                                 }
                             } else {
+                                showMessage("No hospital here first");
                                 progressBar.setVisibility(View.VISIBLE);
 //                                linearSpinnerHospital.setVisibility(View.GONE);
 //                                linearSpinnerService.setVisibility(View.GONE);
@@ -293,8 +323,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
 //                    } else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
-                        showMessage("Error while getting Hospital");
-//                        snackBarFloating();
+//                        showMessage("Error while getting Service");
+                        snackBarFloating();
+//                        showBottomSheetCity();
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -305,12 +336,12 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                             serviceItemsArrayList.add(serviceItems);
                             id_service = String.valueOf(serviceItemsArrayList.get(i).getIdService());
                             service_name = String.valueOf(serviceItemsArrayList.get(i).getServiceName());
-                            showMessage("Item :" + hospital_id + " - " + hospitalItems.getHospitalName());
+//                            showMessage("Item :" + hospital_id + " - " + hospitalItems.getHospitalName());
                             if (serviceItemsArrayList.size() > 0) {
                                 customArrayAdapterService = new CustomArrayAdapterService(getApplicationContext(), R.layout.item_service_hospital, serviceItemsArrayList);
                                 spinnerService.setAdapter(customArrayAdapterService);
                             } else {
-                                showMessage("empty service");
+                                showMessage("empty service first");
 //                                progressBar.setVisibility(View.VISIBLE);
 //                                linearSpinnerService.setVisibility(View.GONE);
 //                                linearEditService.setVisibility(View.VISIBLE);
@@ -355,7 +386,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         id_city = String.valueOf(cityItemsArrayList.get(i).getIdCity());
 //        id_hospitals = ((TextView)view.findViewById(R.id.id_hospital)).getText().toString();
         city_name = ((TextView) view.findViewById(R.id.name_city)).getText().toString();
-        showMessage(id_city + " : " + city_name);
+//        showMessage(id_city + " : " + city_name);
         if (id_city != null) {
             getHospital(id_city);
             linearSpinnerHospital.setVisibility(View.VISIBLE);
@@ -363,13 +394,12 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             linearSpinnerHospital.setVisibility(View.GONE);
 //            hospitalItemsArrayList.clear();
 //            snackBarFloating();
-            showMessage("No city found from outside method cities");
+            showMessage("No city found from outside method cities second");
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
 
     }
 
@@ -508,4 +538,25 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
     private void showMessage(String message) {
         Toast.makeText(NewOpinion.this, message, Toast.LENGTH_SHORT).show();
     }
+
+    private void showBottomSheetCity() {
+        FragmentBottomCity sheetCity = new FragmentBottomCity();
+        FragmentBottomCity fragmentBottomCity = FragmentBottomCity.newInstance();
+        fragmentBottomCity.show(getSupportFragmentManager(), sheetCity.getTag());
+//        fragmentBottomCity.show(getChildFragmentManager(), FragmentBottomCity.TAG);
+    }
+
+    private void showBottomSheetHospital() {
+        FragmentBottomSheetHospital sheetHospital = new FragmentBottomSheetHospital();
+        FragmentBottomSheetHospital fragmentBottomSheetHospital = FragmentBottomSheetHospital.newInstance();
+        fragmentBottomSheetHospital.show(getSupportFragmentManager(), sheetHospital.getTag());
+    }
+
+    private void showBottomSheetService() {
+        FragmentBottomSheetService sheetService = new FragmentBottomSheetService();
+        FragmentBottomSheetService fragmentBottomSheetService = FragmentBottomSheetService.newInstance();
+        fragmentBottomSheetService.show(getSupportFragmentManager(), sheetService.getTag());
+    }
+
+
 }

@@ -63,25 +63,16 @@ import static com.hame.forum.controller.utils.Constant.SHARED_PREF_NAME;
  */
 public class FragmentBottomCity extends BottomSheetDialogFragment {
     private static final String TAG = FragmentBottomCity.class.getSimpleName();
-    // TODO: Customize parameter argument names
-    private static final String ARG_ITEM_COUNT = "item_count";
-    private EditText editCity, editService, editHospital, editHospitalAddress;
+    private EditText editCity;
     private SessionManager sessionManager;
     private CityItems cityItems = new CityItems();
-    private HospitalItems hospitalItems = new HospitalItems();
-    private ServiceItems serviceItems = new ServiceItems();
     private Button buttonSubmit;
     private ProgressBar progressBar;
     private Context context;
-    private String id_city, city_name, id_hospital, hospital_name, hospital_address, service_name;
+    private String id_city, city_name;
 
-    // TODO: Customize parameters
-    public static FragmentBottomCity newInstance(int itemCount) {
-        final FragmentBottomCity fragment = new FragmentBottomCity();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_COUNT, itemCount);
-        fragment.setArguments(args);
-        return fragment;
+    public static FragmentBottomCity newInstance() {
+        return new FragmentBottomCity();
     }
 
     @Nullable
@@ -97,9 +88,6 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         editCity = view.findViewById(R.id.edit_for_city_bottom_sheet_city);
-        editHospital = view.findViewById(R.id.edit_for_hospital_bottom_sheet_city);
-        editService = view.findViewById(R.id.edit_for_hospital_address_bottom_sheet_city);
-        editService = view.findViewById(R.id.edit_for_service_bottom_sheet_city);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_city);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_city);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -107,9 +95,6 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 city_name = editCity.getText().toString();
-                hospital_name = editHospital.getText().toString();
-                hospital_address = editHospitalAddress.getTag().toString();
-                service_name = editService.getText().toString();
                 if (checkInternet()) {
 //                    TODO
                     showMessage("Coming soon");
@@ -118,10 +103,11 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 }
             }
         });
+        hideKeyboardSoft();
 
     }
 
-    private void sendCiy(final CityItems cityItems) {
+    private void sendCiy() {
         progressBar.setVisibility(View.VISIBLE);
         buttonSubmit.setVisibility(View.GONE);
         city_name = editCity.getText().toString();
@@ -150,91 +136,10 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> map = new HashMap<>();
-//                map.put("city_name", city_name);
-                map.put("city_name", cityItems.getCityName());
+                map.put("city_name", city_name);
+//                map.put("city_name", cityItems.getCityName());
                 map.put("id", sessionManager.getUser().getId_Country());
                 map.put("nom", sessionManager.getUser().getUser_country());
-                return map;
-            }
-        };
-        getStringRequeue(stringRequest);
-    }
-
-    private void sendHospital() {
-        buttonSubmit.setVisibility(View.GONE);
-        hospital_name = editHospital.getText().toString();
-        hospital_address = editHospitalAddress.getText().toString();
-        city_name = cityItems.getCityName();
-        id_city = String.valueOf(cityItems.getIdCity());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v(TAG, "Response: " + response);
-                if (response.trim().equalsIgnoreCase("0")) {
-                    Log.v(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Hospital Well Inserted");
-//                    hideKeyboardSoft();
-                } else {
-                    Log.e(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new Hospital... Try Later");
-                    buttonSubmit.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getErrors(error);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> map = new HashMap<>();
-                map.put("hospital_name", hospital_name);
-                map.put("hospital_address", hospital_address);
-                map.put("id_city", String.valueOf(cityItems.getIdCity()));
-                map.put("city_name", city_name);
-                return map;
-            }
-        };
-        getStringRequeue(stringRequest);
-    }
-
-    private void sendService(final String id_hospital) {
-        buttonSubmit.setVisibility(View.GONE);
-        service_name = editService.getText().toString();
-        hospital_name = hospitalItems.getHospitalName();
-//        id_hospital = String.valueOf(hospitalItems.getIdHospital());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL_SERVICES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v(TAG, "Response: " + response);
-                if (response.trim().equalsIgnoreCase("0")) {
-                    Log.v(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Service Well Inserted");
-//                    hideKeyboardSoft();
-                } else {
-                    Log.e(TAG, response);
-                    progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new Service... Try Later");
-                    buttonSubmit.setVisibility(View.VISIBLE);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getErrors(error);
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> map = new HashMap<>();
-                map.put("service_name", service_name);
-                map.put("id_hospital", id_hospital);
-//                map.put("id_hospital", String.valueOf(hospitalItems.getIdHospital()));
-                map.put("hospital_name", hospital_name);
                 return map;
             }
         };

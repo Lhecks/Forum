@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/lyt_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:clipToPadding="false"
     android:orientation="vertical"
@@ -14,7 +14,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,11 +23,12 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/bt_close"
+                android:id="@+id/bt_close_hospital"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:tint="@android:color/white"
+                android:contentDescription="@string/close_bottom_sheet_fragment"
                 app:srcCompat="@drawable/ic_close" />
 
             <View
@@ -39,23 +41,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="New event"
+                android:text="@string/new_hospital_bottom_sheet"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                 android:textColor="@android:color/white" />
-
-            <ImageButton
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_create" />
-
-            <ImageButton
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_more_vert" />
 
         </LinearLayout>
 
@@ -72,6 +60,7 @@
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/linear_hospital_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -87,6 +76,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hospital_name"
+                        android:autofillHints="@string/hospital_name"
                         android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,37 +91,34 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hospital_address"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/text_input_for_service_hospital"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/circle_bg_color">
-
-                    <EditText
-                        android:id="@+id/edit_for_service_bottom_sheet_hospital"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/service"
+                        android:autofillHints="@string/hospital_address"
                         android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
             <Button
+                android:layout_below="@+id/linear_hospital_fragment"
+                android:layout_marginTop="@dimen/spacing_xm_large"
                 android:id="@+id/button_bottom_sheet_hospital"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="@dimen/spacing_x_medium"
                 android:background="@drawable/green_onclick_white"
-                android:text="Send"
+                android:text="@string/send_your_request"
                 android:textColor="@color/colorWhite" />
-        </RelativeLayout>
 
+            <ProgressBar
+                android:id="@+id/progress_bar_bottom_sheet_hospital"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linear_hospital_fragment"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="@dimen/spacing_xm_large"
+                android:layout_marginBottom="@dimen/spacing_x_medium"
+                android:visibility="gone" />
+        </RelativeLayout>
 
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
