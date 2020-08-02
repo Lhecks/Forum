@@ -15,29 +15,22 @@ public class CityItems implements Parcelable {
             return new CityItems[size];
         }
     };
-    private int idCity;
-    private String cityName, country_name;
 
     public CityItems() {
     }
 
-    public CityItems(int idCity, String cityName, String country_name) {
+    private String idCity, cityName, country_name;
+
+    public CityItems(String idCity, String cityName, String country_name) {
         this.idCity = idCity;
         this.cityName = cityName;
         this.country_name = country_name;
     }
 
     protected CityItems(Parcel in) {
-        idCity = in.readInt();
+        idCity = in.readString();
         cityName = in.readString();
         country_name = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(idCity);
-        dest.writeString(cityName);
-        dest.writeString(country_name);
     }
 
     @Override
@@ -45,11 +38,18 @@ public class CityItems implements Parcelable {
         return 0;
     }
 
-    public int getIdCity() {
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(idCity);
+        dest.writeString(cityName);
+        dest.writeString(country_name);
+    }
+
+    public String getIdCity() {
         return idCity;
     }
 
-    public void setIdCity(int idCity) {
+    public void setIdCity(String idCity) {
         this.idCity = idCity;
     }
 

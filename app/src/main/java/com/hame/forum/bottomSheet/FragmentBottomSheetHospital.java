@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +65,7 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
     private static final String TAG = FragmentBottomSheetHospital.class.getSimpleName();
     private EditText editHospital, editHospitalAddress;
     private CityItems cityItems = new CityItems();
+    private SessionManager sessionManager;
     private HospitalItems hospitalItems = new HospitalItems();
     private Button buttonSubmit;
     private int city_id;
@@ -85,23 +87,12 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Bundle bundleHospital = this.getArguments();
-        Intent intent = null;
-        try {
-            intent = Intent.getIntent("");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        assert intent != null;
-        city_id = intent.getIntExtra(NewOpinion.EXTRA_ID_CITY, 0);
-//        if (bundleHospital!=null){
-        assert bundleHospital != null;
-        city_id = bundleHospital.getInt(NewOpinion.EXTRA_ID_CITY, 0);
-//        String id_city = bundleHospital.getString("id_city","id_city");
-//        String city_name = bundleHospital.getString("city_name","city_name");
-//        }
-        showMessage(city_id + " ::: ");
+        sessionManager = new SessionManager(view.getContext());
+        id_city = sessionManager.getCity().getIdCity();
+        city_name = sessionManager.getCity().getCityName();
+        showMessage(id_city + " ::: " + city_name);
 
+        ImageButton imageButton = view.findViewById(R.id.bt_close_hospital);
         editHospital = view.findViewById(R.id.edit_for_hospital_bottom_sheet_hospital);
         editHospitalAddress = view.findViewById(R.id.edit_for_hospital_address_bottom_sheet_hospital);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_hospital);
@@ -119,6 +110,13 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
                 }
             }
         });
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
         hideKeyboardSoft();
     }
 
@@ -126,8 +124,8 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
         buttonSubmit.setVisibility(View.GONE);
         hospital_name = editHospital.getText().toString();
         hospital_address = editHospitalAddress.getText().toString();
-        city_name = cityItems.getCityName();
-        id_city = String.valueOf(cityItems.getIdCity());
+        id_city = sessionManager.getCity().getIdCity();
+        city_name = sessionManager.getCity().getCityName();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -155,7 +153,7 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
                 Map<String, String> map = new HashMap<>();
                 map.put("hospital_name", hospital_name);
                 map.put("hospital_address", hospital_address);
-                map.put("id_city", String.valueOf(cityItems.getIdCity()));
+                map.put("id_city", id_city);
                 map.put("city_name", city_name);
                 return map;
             }

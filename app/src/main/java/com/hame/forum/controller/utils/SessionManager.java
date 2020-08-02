@@ -5,8 +5,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.hame.forum.models.CityItems;
+import com.hame.forum.models.HospitalItems;
 import com.hame.forum.models.UserItems;
 
+import static com.hame.forum.controller.utils.Constant.CITY_NAME;
+import static com.hame.forum.controller.utils.Constant.COMMENT_TIME;
+import static com.hame.forum.controller.utils.Constant.HOSPITAL_ADDRESS;
+import static com.hame.forum.controller.utils.Constant.HOSPITAL_ID;
+import static com.hame.forum.controller.utils.Constant.HOSPITAL_NAME;
+import static com.hame.forum.controller.utils.Constant.ID_CITY;
 import static com.hame.forum.controller.utils.Constant.LOGGED_IN_SHARED_PREF;
 import static com.hame.forum.controller.utils.Constant.USER_BIRTHDAY;
 import static com.hame.forum.controller.utils.Constant.ID_COUNTRY;
@@ -59,6 +67,21 @@ public class SessionManager {
         editor.apply();
     }
 
+    public void cityPref(CityItems cityItems) {
+        editor.putBoolean(LOGGED_IN_SHARED_PREF, true);
+        editor.putString(ID_CITY, String.valueOf(cityItems.getIdCity()));
+        editor.putString(CITY_NAME, cityItems.getCountry_name());
+//        editor.putString(COUNTRY_NAME, cityItems.getCountry_name());
+        editor.apply();
+    }
+
+    public void hospitalPref(HospitalItems hospitalItems) {
+        editor.putBoolean(LOGGED_IN_SHARED_PREF, true);
+        editor.putString(HOSPITAL_ID, String.valueOf(hospitalItems.getIdHospital()));
+        editor.putString(HOSPITAL_NAME, hospitalItems.getHospitalName());
+//        editor.putString(COUNTRY_NAME, cityItems.getCountry_name());
+        editor.apply();
+    }
 
     public UserItems getUser() {
         return new UserItems(
@@ -73,15 +96,20 @@ public class SessionManager {
                 pref.getString(COUNTRY_NAME, null),
                 pref.getString(USER_PROFESSION, null));
     }
-//    public ForumItems getForum() {
-//        return new ForumItems(
-//            pref.getString(FORUM_ID, null),
-//            pref.getString(USER_ID, null),
-//            pref.getString(FORUM_SUBJECT, null),
-//            pref.getString(FORUM_SUBJECT, null),
-//            pref.getString(FORUM_SUBJECT_DATE, null),
-//            pref.getString(FORUM_SUBJECT_TIME, null));
-//    }
+
+    public CityItems getCity() {
+        return new CityItems(
+                pref.getString(ID_CITY, null),
+                pref.getString(CITY_NAME, null),
+                pref.getString(COUNTRY_NAME, null));
+    }
+
+    public HospitalItems getHospital() {
+        return new HospitalItems(
+                pref.getString(HOSPITAL_ID, null),
+                pref.getString(HOSPITAL_NAME, null),
+                pref.getString(HOSPITAL_ADDRESS, null));
+    }
 
     public void logOut() {
         editor.clear();

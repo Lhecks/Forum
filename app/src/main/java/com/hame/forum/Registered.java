@@ -229,51 +229,53 @@ public class Registered extends AppCompatActivity implements AdapterView.OnItemS
         getStringRequeue(stringRequest);
     }
 
-    private void getCountries() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, AppConfig.URL_JSON_GET_COUNTRIES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                countryItemsList = new ArrayList<>();
-                try {
-                    JSONArray jsonArray = new JSONArray(response);
+//   This method getCountries() allow to get country list through the Spinner
+private void getCountries() {
+    StringRequest stringRequest = new StringRequest(Request.Method.GET, AppConfig.URL_JSON_GET_COUNTRIES, new Response.Listener<String>() {
+        @Override
+        public void onResponse(String response) {
+            countryItemsList = new ArrayList<>();
+            try {
+                JSONArray jsonArray = new JSONArray(response);
+                Log.d("TAG", response);
+                if (response.equals("[]") || jsonArray.isNull(0)) {
                     Log.d("TAG", response);
-                    if (response.equals("[]") || jsonArray.isNull(0)) {
-                        Log.d("TAG", response);
-                    } else {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            CountryItems countryItems = new CountryItems(
-                                    jsonObject.getInt("id"),
-                                    jsonObject.getString("nom"),
-                                    jsonObject.getString("indicatif")
-                            );
-                            countryItemsList.add(countryItems);
-                            adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.item_country, countryItemsList);
-                            rCountry.setAdapter(adapter);
-                        }
-                        rCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                                id_country = ((TextView) view.findViewById(R.id.id_country)).getText().toString();
-                                user_country = ((TextView) view.findViewById(R.id.name_country)).getText().toString();
-                                showMessage(id_country + " : " + user_country);
-                            }
-
-                            public void onNothingSelected(AdapterView<?> parent) {
-                            }
-                        });
+                } else {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        CountryItems countryItems = new CountryItems(
+                                jsonObject.getInt("id"),
+                                jsonObject.getString("nom"),
+                                jsonObject.getString("indicatif")
+                        );
+                        countryItemsList.add(countryItems);
+                        adapter = new CustomArrayAdapter(getApplicationContext(), R.layout.item_country, countryItemsList);
+                        rCountry.setAdapter(adapter);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    rCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                            id_country = ((TextView) view.findViewById(R.id.id_country)).getText().toString();
+                            user_country = ((TextView) view.findViewById(R.id.name_country)).getText().toString();
+                            showMessage(id_country + " : " + user_country);
+                        }
+
+                        public void onNothingSelected(AdapterView<?> parent) {
+                        }
+                    });
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                getError(error);
-            }
-        });
-        getStringRequeue(stringRequest);
-    }
+        }
+    }, new Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            getError(error);
+        }
+    });
+    getStringRequeue(stringRequest);
+}
+//    End of te getCountries() method
 
     public boolean checkingInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);

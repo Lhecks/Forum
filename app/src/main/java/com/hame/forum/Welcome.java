@@ -67,8 +67,8 @@ public class Welcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-//        Objects.requireNonNull(getSupportActionBar()).hide();
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
+//        getSupportActionBar().hide();
         sessionManager = new SessionManager(getApplicationContext());
         if (!sessionManager.isFirstTimeLaunch()) {
             launchMains();

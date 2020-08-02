@@ -42,6 +42,7 @@ public class Constant {
     public static final String ID_CITY = "id_city";
     public static final String CITY_NAME = "city_name";
     public static final String HOSPITAL_NAME = "hospital_name ";
+    public static final String HOSPITAL_ADDRESS = "hospital_address";
     public static final String SERVICE_NAME = "service_name";
     //SharedPreferences
     public static final String SHARED_PREF_NAME = "my_login_app";

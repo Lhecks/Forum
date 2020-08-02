@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class HospitalItems implements Parcelable {
+
     public static final Creator<HospitalItems> CREATOR = new Creator<HospitalItems>() {
         @Override
         public HospitalItems createFromParcel(Parcel in) {
@@ -15,29 +16,22 @@ public class HospitalItems implements Parcelable {
             return new HospitalItems[size];
         }
     };
-    private int idHospital;
-    private String hospitalName, city_name;
 
     public HospitalItems() {
     }
 
-    public HospitalItems(int idHospital, String hospitalName, String city_name) {
+    private String idHospital, hospitalName, hospitalAddress;
+
+    public HospitalItems(String idHospital, String hospitalName, String hospitalAddress) {
         this.idHospital = idHospital;
         this.hospitalName = hospitalName;
-        this.city_name = city_name;
+        this.hospitalAddress = hospitalAddress;
     }
 
     protected HospitalItems(Parcel in) {
-        idHospital = in.readInt();
+        idHospital = in.readString();
         hospitalName = in.readString();
-        city_name = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(idHospital);
-        dest.writeString(hospitalName);
-        dest.writeString(city_name);
+        hospitalAddress = in.readString();
     }
 
     @Override
@@ -45,11 +39,18 @@ public class HospitalItems implements Parcelable {
         return 0;
     }
 
-    public int getIdHospital() {
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(idHospital);
+        dest.writeString(hospitalName);
+        dest.writeString(hospitalAddress);
+    }
+
+    public String getIdHospital() {
         return idHospital;
     }
 
-    public void setIdHospital(int idHospital) {
+    public void setIdHospital(String idHospital) {
         this.idHospital = idHospital;
     }
 
@@ -61,11 +62,11 @@ public class HospitalItems implements Parcelable {
         this.hospitalName = hospitalName;
     }
 
-    public String getCity_name() {
-        return city_name;
+    public String getHospitalAddress() {
+        return hospitalAddress;
     }
 
-    public void setCity_name(String city_name) {
-        this.city_name = city_name;
+    public void setHospitalAddress(String hospitalAddress) {
+        this.hospitalAddress = hospitalAddress;
     }
 }

@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,9 +63,10 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
     private HospitalItems hospitalItems = new HospitalItems();
     private ServiceItems serviceItems = new ServiceItems();
     private Button buttonSubmit;
+    private SessionManager sessionManager;
     private ProgressBar progressBar;
     private Context context;
-    private String id_hospital, hospital_name, hospital_address, service_name;
+    private String id_hospital, hospital_name, service_name;
 
     public static FragmentBottomSheetService newInstance() {
         return new FragmentBottomSheetService();
@@ -79,12 +81,11 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Bundle bundleService = this.getArguments();
-        if (bundleService != null) {
-            String id_hospitals = bundleService.getString("id_hospitals", "id_hospitals");
-            String hospital_name = bundleService.getString("hospital_name", "hospital_name");
-            showMessage(id_hospitals + " ::: " + hospital_name);
-        }
+        sessionManager = new SessionManager(view.getContext());
+        id_hospital = sessionManager.getHospital().getIdHospital();
+        hospital_name = sessionManager.getHospital().getHospitalName();
+        showMessage(id_hospital + " ::: " + hospital_name);
+        ImageButton imageButton = view.findViewById(R.id.bt_close_service);
         editService = view.findViewById(R.id.edit_service_bottom_sheet_service);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_service);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_service);
@@ -98,6 +99,13 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
                 } else {
                     showMessage(getString(R.string.check_internet));
                 }
+            }
+        });
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
             }
         });
     }
