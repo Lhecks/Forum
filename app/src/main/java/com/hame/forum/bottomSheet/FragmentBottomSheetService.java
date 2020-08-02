@@ -79,6 +79,12 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Bundle bundleService = this.getArguments();
+        if (bundleService != null) {
+            String id_hospitals = bundleService.getString("id_hospitals", "id_hospitals");
+            String hospital_name = bundleService.getString("hospital_name", "hospital_name");
+            showMessage(id_hospitals + " ::: " + hospital_name);
+        }
         editService = view.findViewById(R.id.edit_service_bottom_sheet_service);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_service);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_service);
@@ -88,7 +94,7 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
             public void onClick(View view) {
                 service_name = editService.getText().toString();
                 if (checkInternet()) {
-                    showMessage("Coming soon");
+                    sendService();
                 } else {
                     showMessage(getString(R.string.check_internet));
                 }

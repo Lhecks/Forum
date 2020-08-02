@@ -40,6 +40,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -68,6 +70,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    public static final String EXTRA_ID_CITY = "com.hame.forum.NewOpinion.id_city";
     private static final String TAG = NewOpinion.class.getSimpleName();
     private View view;
     private View parent_view;
@@ -120,6 +123,11 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         linearSpinnerService = findViewById(R.id.linear_spinner_service);
 
         String id_country = sessionManager.getUser().getId_Country();
+        if (checkingInternet()) {
+            getCities(id_country);
+        } else {
+            showMessage(getString(R.string.check_internet));
+        }
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +148,7 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 }
             }
         });
+
         textCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,19 +170,28 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             }
         });
 
-
-        if (checkingInternet()) {
-            getCities(id_country);
-        } else {
-            showMessage(getString(R.string.check_internet));
-        }
-
         spinnerCity.setOnItemSelectedListener(this);
 
         hideKeyboardSoft();
-//        showBottomSheetCity();
-//        showBottomSheetHospital();
-//        showBottomSheetService();
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String opinion = editOpinion.getText().toString();
+                if (opinion.startsWith(" ")) {
+                    editOpinion.setText(opinion.trim());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
     }
 
     private void getCities(final String id_country) {
@@ -185,11 +203,9 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 Log.v(TAG + " Getting Cities item", response + " City Answers");
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-//                    if (id_city == null ){
-//                        showMessage("Service list empty city:::");
-//                    }else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
+                        linearSpinnerCity.setVisibility(View.GONE);
                         showBottomSheetCity();
                         showMessage("Error while getting City");
                     } else {
@@ -205,13 +221,6 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 spinnerCity.setAdapter(customArrayAdapterCity);
                             } else {
                                 showMessage("No City here First");
-//                                progressBar.setVisibility(View.VISIBLE);
-//                                linearSpinnerCity.setVisibility(View.GONE);
-//                                linearSpinnerHospital.setVisibility(View.GONE);
-//                                linearSpinnerService.setVisibility(View.GONE);
-//                                linearEditCity.setVisibility(View.VISIBLE);
-//                                linearEditHospital.setVisibility(View.VISIBLE);
-//                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                             }
                         }
@@ -275,16 +284,8 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                             } else {
                                 showMessage("No hospital here first");
                                 progressBar.setVisibility(View.VISIBLE);
-//                                linearSpinnerHospital.setVisibility(View.GONE);
-//                                linearSpinnerService.setVisibility(View.GONE);
-//                                serviceItemsArrayList.clear();
-//                                snackBarFloating();
-
-//                                linearEditHospital.setVisibility(View.VISIBLE);
-//                                linearEditService.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                             }
-//                            customArrayAdapterHospital
                         }
                     }
                 } catch (JSONException e) {
@@ -317,15 +318,11 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                 Log.v(TAG + "Getting Services item", response + " Services Answers");
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-//                    if (id_service == null ){
-//                        showMessage("Service list empty Service:::");
-//                        linearSpinnerService.setVisibility(View.VISIBLE);
-//                    } else
                     if (response.equals("[]") || jsonArray.isNull(0)) {
+                        progressBar.setVisibility(View.VISIBLE);
+//                        customArrayAdapterService.clear();
                         progressBar.setVisibility(View.GONE);
-//                        showMessage("Error while getting Service");
-                        snackBarFloating();
-//                        showBottomSheetCity();
+                        showMessage("Error while getting Service");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -342,24 +339,8 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
                                 spinnerService.setAdapter(customArrayAdapterService);
                             } else {
                                 showMessage("empty service first");
-//                                progressBar.setVisibility(View.VISIBLE);
-//                                linearSpinnerService.setVisibility(View.GONE);
-//                                linearEditService.setVisibility(View.VISIBLE);
-//                                progressBar.setVisibility(View.GONE);
-//                                snackBarFloating();
                             }
                         }
-//                        spinnerService.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                            @Override
-//                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                                id_service = ((TextView)view.findViewById(R.id.id_service_hospital)).getText().toString();
-//                                service_name = ((TextView)view.findViewById(R.id.name_hospital)).getText().toString();
-//                                showMessage(id_service + " : " + service_name);
-//                            }
-//                            @Override
-//                            public void onNothingSelected(AdapterView<?> adapterView) {
-//                            }
-//                        });
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -391,9 +372,8 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
             getHospital(id_city);
             linearSpinnerHospital.setVisibility(View.VISIBLE);
         } else {
+            customArrayAdapterHospital.clear();
             linearSpinnerHospital.setVisibility(View.GONE);
-//            hospitalItemsArrayList.clear();
-//            snackBarFloating();
             showMessage("No city found from outside method cities second");
         }
     }
@@ -543,20 +523,25 @@ public class NewOpinion extends AppCompatActivity implements AdapterView.OnItemS
         FragmentBottomCity sheetCity = new FragmentBottomCity();
         FragmentBottomCity fragmentBottomCity = FragmentBottomCity.newInstance();
         fragmentBottomCity.show(getSupportFragmentManager(), sheetCity.getTag());
-//        fragmentBottomCity.show(getChildFragmentManager(), FragmentBottomCity.TAG);
     }
 
     private void showBottomSheetHospital() {
         FragmentBottomSheetHospital sheetHospital = new FragmentBottomSheetHospital();
         FragmentBottomSheetHospital fragmentBottomSheetHospital = FragmentBottomSheetHospital.newInstance();
         fragmentBottomSheetHospital.show(getSupportFragmentManager(), sheetHospital.getTag());
+        Bundle bundleHospital = new Bundle();
+        bundleHospital.putString("id_city", id_city);
+        bundleHospital.putString("city_name", city_name);
+        sheetHospital.setArguments(bundleHospital);
     }
 
     private void showBottomSheetService() {
         FragmentBottomSheetService sheetService = new FragmentBottomSheetService();
         FragmentBottomSheetService fragmentBottomSheetService = FragmentBottomSheetService.newInstance();
         fragmentBottomSheetService.show(getSupportFragmentManager(), sheetService.getTag());
+        Bundle bundleService = new Bundle();
+        bundleService.putString("id_hospitals", id_hospitals);
+        bundleService.putString("hospital_name", hospital_name);
+        sheetService.setArguments(bundleService);
     }
-
-
 }

@@ -2,6 +2,7 @@ package com.hame.forum.bottomSheet;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -38,6 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hame.forum.NewOpinion;
 import com.hame.forum.R;
 import com.hame.forum.controller.app.AppConfig;
 import com.hame.forum.controller.utils.SessionManager;
@@ -45,6 +47,7 @@ import com.hame.forum.models.CityItems;
 import com.hame.forum.models.HospitalItems;
 import com.hame.forum.models.ServiceItems;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,11 +60,13 @@ import java.util.Map;
  */
 public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
 
+
     private static final String TAG = FragmentBottomSheetHospital.class.getSimpleName();
-    private EditText editService, editHospital, editHospitalAddress;
+    private EditText editHospital, editHospitalAddress;
     private CityItems cityItems = new CityItems();
     private HospitalItems hospitalItems = new HospitalItems();
     private Button buttonSubmit;
+    private int city_id;
     private ProgressBar progressBar;
     private Context context;
     private String id_city, city_name, hospital_name, hospital_address;
@@ -80,6 +85,23 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Bundle bundleHospital = this.getArguments();
+        Intent intent = null;
+        try {
+            intent = Intent.getIntent("");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        assert intent != null;
+        city_id = intent.getIntExtra(NewOpinion.EXTRA_ID_CITY, 0);
+//        if (bundleHospital!=null){
+        assert bundleHospital != null;
+        city_id = bundleHospital.getInt(NewOpinion.EXTRA_ID_CITY, 0);
+//        String id_city = bundleHospital.getString("id_city","id_city");
+//        String city_name = bundleHospital.getString("city_name","city_name");
+//        }
+        showMessage(city_id + " ::: ");
+
         editHospital = view.findViewById(R.id.edit_for_hospital_bottom_sheet_hospital);
         editHospitalAddress = view.findViewById(R.id.edit_for_hospital_address_bottom_sheet_hospital);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_hospital);
@@ -91,7 +113,7 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
                 hospital_name = editHospital.getText().toString();
                 hospital_address = editHospitalAddress.getTag().toString();
                 if (checkInternet()) {
-                    showMessage("Coming soon");
+                    sendHospital();
                 } else {
                     showMessage(getString(R.string.check_internet));
                 }

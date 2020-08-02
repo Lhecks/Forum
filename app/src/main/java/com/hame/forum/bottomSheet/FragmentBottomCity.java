@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,11 +66,12 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
     private static final String TAG = FragmentBottomCity.class.getSimpleName();
     private EditText editCity;
     private SessionManager sessionManager;
+    private ImageButton imageButton;
     private CityItems cityItems = new CityItems();
     private Button buttonSubmit;
     private ProgressBar progressBar;
     private Context context;
-    private String id_city, city_name;
+    private String id_country, city_name;
 
     public static FragmentBottomCity newInstance() {
         return new FragmentBottomCity();
@@ -90,17 +92,29 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
         editCity = view.findViewById(R.id.edit_for_city_bottom_sheet_city);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_city);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_city);
+        imageButton = view.findViewById(R.id.bt_close_city);
+        showMessage(sessionManager.getUser().getId_Country() + " ::: " + sessionManager.getUser().getUser_country());
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 city_name = editCity.getText().toString();
                 if (checkInternet()) {
-//                    TODO
-                    showMessage("Coming soon");
+                    if (!city_name.isEmpty()) {
+                        sendCiy();
+                    } else {
+                        showMessage(getString(R.string.empty_field));
+                    }
                 } else {
                     showMessage(getString(R.string.check_internet));
                 }
+            }
+        });
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
             }
         });
         hideKeyboardSoft();
@@ -108,6 +122,8 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
     }
 
     private void sendCiy() {
+        id_country = sessionManager.getUser().getId_Country();
+        city_name = sessionManager.getUser().getUser_country();
         progressBar.setVisibility(View.VISIBLE);
         buttonSubmit.setVisibility(View.GONE);
         city_name = editCity.getText().toString();
@@ -118,6 +134,7 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 if (response.trim().equalsIgnoreCase("0")) {
                     Log.v(TAG, response);
                     progressBar.setVisibility(View.GONE);
+                    editCity.getText().clear();
                     showMessage("City Well Inserted");
 //                    hideKeyboardSoft();
                 } else {
@@ -138,8 +155,8 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 Map<String, String> map = new HashMap<>();
                 map.put("city_name", city_name);
 //                map.put("city_name", cityItems.getCityName());
-                map.put("id", sessionManager.getUser().getId_Country());
-                map.put("nom", sessionManager.getUser().getUser_country());
+                map.put("id", id_country);
+                map.put("nom", city_name);
                 return map;
             }
         };
