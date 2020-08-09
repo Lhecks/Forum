@@ -91,7 +91,7 @@ public class NewSubject extends AppCompatActivity {
             public void onClick(View v) {
                 forum_subject = edit_forum_subject.getText().toString();
                 if (checkingInternet()) {
-                    if (!forum_subject.isEmpty()) {
+                    if (!forum_subject.isEmpty() && !forum_subject.startsWith(" ")) {
                         hideKeyboardSoft();
                         sendForum();
                     } else {

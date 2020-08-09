@@ -33,7 +33,7 @@ public static final String URL = "http://192.168.43.253/james/";
 
     //    Server links for Hospitals Services
     public static String URL_JSON_GET_HOSPITAL_SERVICES = URL + "retrieve_services_hospital.php";
-    public static String URL_INSERT_HOSPITAL_SERVICES = URL + "insert_services_hospital.php";
+    public static String URL_INSERT_HOSPITAL_SERVICES = URL + "insert_hospital_service.php";
 
     //    Server link for cities
     public static String URL_JSON_GET_CITY = URL + "retrieve_cities.php";

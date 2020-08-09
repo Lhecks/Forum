@@ -37,6 +37,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+//    Adding the ButterKnife library
+//    implementation 'com.jakewharton:butterknife:10.2.1'
+//    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+
 //    Adding Glide Library
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'

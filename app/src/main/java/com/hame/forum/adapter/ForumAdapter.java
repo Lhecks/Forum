@@ -78,7 +78,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ForumHolder>
         myContext.startActivity(intent);
     }
 
-    public class ForumHolder extends RecyclerView.ViewHolder {
+    public static class ForumHolder extends RecyclerView.ViewHolder {
         private CardView cardViewForum;
         private TextView textSubjectForum, textUserName, textDateForum, textCommentNumberForum, textSeenForum;
 

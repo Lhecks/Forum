@@ -112,7 +112,7 @@ public class Comments extends AppCompatActivity {
             public void onClick(View view) {
                 new_comment = edit_forum_comment.getText().toString();
                 if (checkingInternet()) {
-                    if (!new_comment.isEmpty()) {
+                    if (!new_comment.isEmpty() && !new_comment.startsWith(" ")) {
                         sendComment();
                         hideKeyboardSoft();
 //                        getComment(String.valueOf(id_forum));
@@ -123,9 +123,9 @@ public class Comments extends AppCompatActivity {
                     showMessage(getString(R.string.check_internet));
                 }
 //                Intent intentForum = new Intent(Comments.this, NewComment.class);
-////                intentForum.putExtra("forum_subject", forumItemsList.get(position));
+//                intentForum.putExtra("forum_subject", forumItemsList.get(position));
 //                intentForum.putExtra(EXTRA_ID_FORUM, forumItems.getId_forum());
-//                Log.e("COmment id forum ","ID FORUM "+ forumItems.getId_forum());
+//                Log.e("Comment id forum ","ID FORUM "+ forumItems.getId_forum());
 //                startActivity(intentForum);
 //                finish();
             }

@@ -130,15 +130,14 @@
                 android:layout_height="80dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/circle_bg_color">
-
                 <EditText
                     android:id="@+id/edit_for_subject_new_opinion"
-                    style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="start"
                     android:inputType="textLongMessage|text|textMultiLine"
                     android:autofillHints="Add Comment"
+                    android:padding="2dp"
                     android:maxLength="500" />
             </com.google.android.material.textfield.TextInputLayout>
 

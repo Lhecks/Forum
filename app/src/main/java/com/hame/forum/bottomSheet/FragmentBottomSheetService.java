@@ -49,15 +49,7 @@ import com.hame.forum.models.ServiceItems;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
- * <p>You can show this modal bottom sheet from your activity like this:</p>
- * <pre>
- *     FragmentBottomSheetService.newInstance(30).show(getSupportFragmentManager(), "dialog");
- * </pre>
- */
 public class FragmentBottomSheetService extends BottomSheetDialogFragment {
-
     private static final String TAG = FragmentBottomSheetService.class.getSimpleName();
     private EditText editService;
     private HospitalItems hospitalItems = new HospitalItems();
@@ -81,10 +73,12 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        context = view.getContext();
         sessionManager = new SessionManager(view.getContext());
         id_hospital = sessionManager.getHospital().getIdHospital();
         hospital_name = sessionManager.getHospital().getHospitalName();
-        showMessage(id_hospital + " ::: " + hospital_name);
+        showMessage(id_hospital + " Service Second tryout " + hospital_name);
+
         ImageButton imageButton = view.findViewById(R.id.bt_close_service);
         editService = view.findViewById(R.id.edit_service_bottom_sheet_service);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_service);
@@ -95,7 +89,16 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
             public void onClick(View view) {
                 service_name = editService.getText().toString();
                 if (checkInternet()) {
-                    sendService();
+                    if (!service_name.isEmpty()) {
+                        hideKeyboardSoft();
+                        Bundle bundle = new Bundle();
+                        String serviceBundle = sessionManager.getHospital().getIdHospital();
+                        bundle.putString("Service_message", serviceBundle);
+                        sendService();
+                        dismiss();
+                    } else {
+                        showMessage(getString(R.string.empty_field));
+                    }
                 } else {
                     showMessage(getString(R.string.check_internet));
                 }
@@ -113,7 +116,8 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
     private void sendService() {
         buttonSubmit.setVisibility(View.GONE);
         service_name = editService.getText().toString();
-        hospital_name = hospitalItems.getHospitalName();
+        id_hospital = sessionManager.getHospital().getIdHospital();
+        hospital_name = sessionManager.getHospital().getHospitalName();
 //        id_hospital = String.valueOf(hospitalItems.getIdHospital());
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL_SERVICES, new Response.Listener<String>() {
             @Override
@@ -142,7 +146,6 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
                 Map<String, String> map = new HashMap<>();
                 map.put("service_name", service_name);
                 map.put("id_hospital", id_hospital);
-//                map.put("id_hospital", String.valueOf(hospitalItems.getIdHospital()));
                 map.put("hospital_name", hospital_name);
                 return map;
             }
@@ -194,6 +197,12 @@ public class FragmentBottomSheetService extends BottomSheetDialogFragment {
 
     private void hideKeyboardSoft() {
         requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

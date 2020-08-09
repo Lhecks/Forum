@@ -55,23 +55,15 @@ import java.util.Objects;
 import static androidx.core.content.ContextCompat.getSystemService;
 import static com.hame.forum.controller.utils.Constant.SHARED_PREF_NAME;
 
-/**
- * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
- * <p>You can show this modal bottom sheet from your activity like this:</p>
- * <pre>
- *     FragmentBottomCity.newInstance(30).show(getSupportFragmentManager(), "dialog");
- * </pre>
- */
 public class FragmentBottomCity extends BottomSheetDialogFragment {
     private static final String TAG = FragmentBottomCity.class.getSimpleName();
     private EditText editCity;
     private SessionManager sessionManager;
-    private ImageButton imageButton;
     private CityItems cityItems = new CityItems();
     private Button buttonSubmit;
     private ProgressBar progressBar;
     private Context context;
-    private String id_country, city_name;
+    private String id_country, country_name, city_name;
 
     public static FragmentBottomCity newInstance() {
         return new FragmentBottomCity();
@@ -79,20 +71,19 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bottom_city_list_dialog, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        context = view.getContext();
         sessionManager = new SessionManager(view.getContext());
-        SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         editCity = view.findViewById(R.id.edit_for_city_bottom_sheet_city);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_city);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_city);
-        imageButton = view.findViewById(R.id.bt_close_city);
+        ImageButton imageButton = view.findViewById(R.id.bt_close_city);
         showMessage(sessionManager.getUser().getId_Country() + " ::: " + sessionManager.getUser().getUser_country());
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -101,7 +92,12 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 city_name = editCity.getText().toString();
                 if (checkInternet()) {
                     if (!city_name.isEmpty()) {
+                        hideKeyboardSoft();
+                        Bundle bundle = new Bundle();
+                        String cityBundle = sessionManager.getUser().getId_Country();
+                        bundle.putString("id", cityBundle);
                         sendCiy();
+                        dismiss();
                     } else {
                         showMessage(getString(R.string.empty_field));
                     }
@@ -123,7 +119,7 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
 
     private void sendCiy() {
         id_country = sessionManager.getUser().getId_Country();
-        city_name = sessionManager.getUser().getUser_country();
+        country_name = sessionManager.getUser().getUser_country();
         progressBar.setVisibility(View.VISIBLE);
         buttonSubmit.setVisibility(View.GONE);
         city_name = editCity.getText().toString();
@@ -140,7 +136,7 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 } else {
                     Log.e(TAG, response);
                     progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new City... Try Later");
+                    showMessage("Error while adding a new City... Try again");
                     buttonSubmit.setVisibility(View.VISIBLE);
                 }
             }
@@ -156,7 +152,7 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
                 map.put("city_name", city_name);
 //                map.put("city_name", cityItems.getCityName());
                 map.put("id", id_country);
-                map.put("nom", city_name);
+                map.put("nom", country_name);
                 return map;
             }
         };
@@ -206,6 +202,12 @@ public class FragmentBottomCity extends BottomSheetDialogFragment {
 
     private void hideKeyboardSoft() {
         requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

@@ -22,6 +22,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import androidx.annotation.RequiresApi;
@@ -36,6 +37,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,16 +54,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
- * <p>You can show this modal bottom sheet from your activity like this:</p>
- * <pre>
- *     FragmentBottomSheetHospital.newInstance(30).show(getSupportFragmentManager(), "dialog");
- * </pre>
- */
 public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
-
-
     private static final String TAG = FragmentBottomSheetHospital.class.getSimpleName();
     private EditText editHospital, editHospitalAddress;
     private CityItems cityItems = new CityItems();
@@ -72,7 +65,7 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
     private ProgressBar progressBar;
     private Context context;
     private String id_city, city_name, hospital_name, hospital_address;
-
+    private LinearLayout linearLayout;
 
     public static FragmentBottomSheetHospital newInstance() {
         return new FragmentBottomSheetHospital();
@@ -80,33 +73,47 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_bottom_sheet_hospital_list_dialog, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        context = view.getContext();
         sessionManager = new SessionManager(view.getContext());
-        id_city = sessionManager.getCity().getIdCity();
-        city_name = sessionManager.getCity().getCityName();
-        showMessage(id_city + " ::: " + city_name);
-
         ImageButton imageButton = view.findViewById(R.id.bt_close_hospital);
         editHospital = view.findViewById(R.id.edit_for_hospital_bottom_sheet_hospital);
         editHospitalAddress = view.findViewById(R.id.edit_for_hospital_address_bottom_sheet_hospital);
         progressBar = view.findViewById(R.id.progress_bar_bottom_sheet_hospital);
         buttonSubmit = view.findViewById(R.id.button_bottom_sheet_hospital);
+        id_city = sessionManager.getCity().getIdCity();
+        city_name = sessionManager.getCity().getCityName();
+
+        Toast.makeText(getContext(), id_city + " ::H second tryout:: " + city_name, Toast.LENGTH_LONG).show();
+//        showMessage(id_city+" H Second tryout "+ city_name);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 hospital_name = editHospital.getText().toString();
-                hospital_address = editHospitalAddress.getTag().toString();
+                hospital_address = editHospitalAddress.getText().toString();
                 if (checkInternet()) {
-                    sendHospital();
+                    if (!hospital_name.isEmpty() && !hospital_address.isEmpty()) {
+                        hideKeyboardSoft();
+                        Bundle bundle = new Bundle();
+                        String serviceBundle = sessionManager.getCity().getIdCity();
+                        bundle.putString("id_city", serviceBundle);
+//                        addHospital();
+                        sendHospital();
+                        dismiss();
+                    } else {
+//                        Log.d(TAG, "");
+                        Toast.makeText(getContext(), getString(R.string.empty_field), Toast.LENGTH_LONG).show();
+//                        showMessage(getString(R.string.empty_field));
+                    }
                 } else {
-                    showMessage(getString(R.string.check_internet));
+                    Toast.makeText(getContext(), getString(R.string.check_internet), Toast.LENGTH_LONG).show();
+//                    showMessage(getString(R.string.check_internet));
                 }
             }
         });
@@ -118,6 +125,49 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
             }
         });
         hideKeyboardSoft();
+    }
+
+    private void addHospital() {
+        buttonSubmit.setVisibility(View.GONE);
+        hospital_name = editHospital.getText().toString();
+        hospital_address = editHospitalAddress.getText().toString();
+        id_city = sessionManager.getCity().getIdCity();
+        city_name = sessionManager.getCity().getCityName();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.v(TAG, "Response: " + response);
+                if (response.trim().equalsIgnoreCase("0")) {
+                    Log.v(TAG, response);
+                    progressBar.setVisibility(View.GONE);
+                    editHospital.getText().clear();
+                    editHospitalAddress.getText().clear();
+//                    showMessage("City Well Inserted");
+//                    hideKeyboardSoft();
+                } else {
+                    Log.e(TAG, response);
+                    progressBar.setVisibility(View.GONE);
+//                    showMessage("Error while adding a new City... Try again");
+                    buttonSubmit.setVisibility(View.VISIBLE);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                getErrors(error);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> map = new HashMap<>();
+                map.put("hospital_name", hospital_name);
+                map.put("hospital_address", hospital_address);
+                map.put("id_city", id_city);
+                map.put("city_name", city_name);
+                return map;
+            }
+        };
+        getStringRequeue(stringRequest);
     }
 
     private void sendHospital() {
@@ -133,12 +183,16 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
                 if (response.trim().equalsIgnoreCase("0")) {
                     Log.v(TAG, response);
                     progressBar.setVisibility(View.GONE);
-                    showMessage("Hospital Well Inserted");
+                    Log.d(TAG, "Hospital Well Inserted");
+//                    Toast.makeText(getContext(), "Hospital Well Inserted", Toast.LENGTH_LONG).show();
+//                    showMessage("Hospital Well Inserted");
                     hideKeyboardSoft();
                 } else {
                     Log.e(TAG, response);
                     progressBar.setVisibility(View.GONE);
-                    showMessage("Error while adding a new Hospital... Try Later");
+                    Log.d(TAG, "Error while adding a new Hospital... Try Later");
+//                    Toast.makeText(getContext(), "Error while adding a new Hospital... Try Later", Toast.LENGTH_LONG).show();
+//                    showMessage("Error while adding a new Hospital... Try Later");
                     buttonSubmit.setVisibility(View.VISIBLE);
                 }
             }
@@ -170,23 +224,28 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
         if (error instanceof NetworkError) {
             progressBar.setVisibility(View.GONE);
             buttonSubmit.setVisibility(View.VISIBLE);
-            showMessage(getString(R.string.volley_network_error));
+            Toast.makeText(getContext(), getString(R.string.volley_network_error), Toast.LENGTH_LONG).show();
+//            showMessage(getString(R.string.volley_network_error));
         } else if (error instanceof ServerError) {
             progressBar.setVisibility(View.GONE);
             buttonSubmit.setVisibility(View.VISIBLE);
-            showMessage(getString(R.string.volley_server_error));
+            Toast.makeText(getContext(), getString(R.string.volley_server_error), Toast.LENGTH_LONG).show();
+//            showMessage(getString(R.string.volley_server_error));
         } else if (error instanceof AuthFailureError) {
             progressBar.setVisibility(View.GONE);
             buttonSubmit.setVisibility(View.VISIBLE);
-            showMessage(getString(R.string.volley_auth_fail));
+            Toast.makeText(getContext(), getString(R.string.volley_auth_fail), Toast.LENGTH_LONG).show();
+//            showMessage(getString(R.string.volley_auth_fail));
         } else if (error instanceof ParseError) {
             progressBar.setVisibility(View.GONE);
             buttonSubmit.setVisibility(View.VISIBLE);
-            showMessage(getString(R.string.volley_parse_error));
+            Toast.makeText(getContext(), getString(R.string.volley_parse_error), Toast.LENGTH_LONG).show();
+//            showMessage(getString(R.string.volley_parse_error));
         } else if (error instanceof TimeoutError) {
             progressBar.setVisibility(View.GONE);
             buttonSubmit.setVisibility(View.VISIBLE);
-            showMessage(getString(R.string.volley_time_out_error));
+            Toast.makeText(getContext(), getString(R.string.volley_time_out_error), Toast.LENGTH_LONG).show();
+//            showMessage(getString(R.string.volley_time_out_error));
         }
     }
 
@@ -198,12 +257,17 @@ public class FragmentBottomSheetHospital extends BottomSheetDialogFragment {
         return netInfo != null && netInfo.isAvailable() && netInfo.isConnectedOrConnecting();
     }
 
-    private void showMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
+//    private void showMessage(String message) {
+//        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+//    }
 
     private void hideKeyboardSoft() {
         requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

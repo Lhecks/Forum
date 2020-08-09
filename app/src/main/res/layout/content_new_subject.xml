@@ -44,9 +44,8 @@
                 android:textStyle="italic" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/edit_new_subject"
-            style="@style/TextAppearance.AppCompat.Body1"
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginStart="10dp"
@@ -54,12 +53,17 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/circle_bg_color"
-            android:gravity="start"
-            android:inputType="textLongMessage|text|textMultiLine"
-            android:maxLength="300"
-            android:padding="2dp" />
+            android:background="@drawable/circle_bg_color">
 
+            <EditText
+                android:id="@+id/edit_new_subject"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start"
+                android:inputType="textLongMessage|text|textMultiLine"
+                android:maxLength="300"
+                android:padding="2dp" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <ProgressBar

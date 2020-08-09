@@ -2,6 +2,7 @@ package com.hame.forum;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,10 +45,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -68,9 +71,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class NewOpinion extends AppCompatActivity {
     public static final String EXTRA_ID_CITY = "com.hame.forum.NewOpinion.id_city";
+    public static final String EXTRA_NAME_CITY = "com.hame.forum.NewOpinion.city_name";
+
+    public static final String EXTRA_ID_HOSPITAL = "com.hame.forum.NewOpinion.id_hospitals";
     private static final String TAG = NewOpinion.class.getSimpleName();
     private View view;
     private View parent_view;
@@ -82,6 +89,9 @@ public class NewOpinion extends AppCompatActivity {
     private CityItems cityItems;
     private ArrayList<CityItems> cityItemsArrayList;
     private CustomArrayAdapterCity customArrayAdapterCity;
+    private FragmentBottomSheetHospital sheetHospital = new FragmentBottomSheetHospital();
+    private FragmentBottomCity sheetCity = new FragmentBottomCity();
+    private FragmentBottomSheetService sheetService = new FragmentBottomSheetService();
     private HospitalItems hospitalItems = new HospitalItems();
     private ArrayList<HospitalItems> hospitalItemsArrayList;
     private CustomArrayAdapterHospital customArrayAdapterHospital;
@@ -93,16 +103,17 @@ public class NewOpinion extends AppCompatActivity {
     private Button buttonSubmit;
     private String opinion_content, rating, id_city, city_name, id_hospitals,
             hospital_name, id_service, service_name, user_name;
-    private LinearLayout linearSpinnerCity, linearSpinnerHospital, linearSpinnerService;
+    private LinearLayout linearSpinnerCity, linearSpinnerHospital, linearSpinnerService, layoutHospital, layoutService;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CommitPrefEdits")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_opinion);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+//        idD();
 
         sessionManager = new SessionManager(getApplicationContext());
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -122,32 +133,14 @@ public class NewOpinion extends AppCompatActivity {
         linearSpinnerHospital = findViewById(R.id.linear_spinner_hospital);
         linearSpinnerService = findViewById(R.id.linear_spinner_service);
 
-        String id_country = sessionManager.getUser().getId_Country();
+        final String id_country = sessionManager.getUser().getId_Country();
         if (checkingInternet()) {
             getCities(id_country);
         } else {
             showMessage(getString(R.string.check_internet));
         }
-        final TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String opinion = editOpinion.getText().toString();
-                if (opinion.startsWith(" ")) {
-                    editOpinion.setText(opinion.trim());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        };
-
+//        sendCityItems(bundle);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,8 +148,7 @@ public class NewOpinion extends AppCompatActivity {
                 opinion_content = editOpinion.getText().toString();
                 rating = String.valueOf(ratingBar.getRating());
                 if (checkingInternet()) {
-                    if (!opinion_content.isEmpty() && !rating.isEmpty() && !city_name.isEmpty()
-                            && !hospital_name.isEmpty() && !service_name.isEmpty()) {
+                    if (!opinion_content.isEmpty() && !opinion_content.startsWith(" ")) {
                         sendOpinion();
                         hideKeyboardSoft();
                     } else {
@@ -170,29 +162,35 @@ public class NewOpinion extends AppCompatActivity {
             }
         });
 
+//        Opening the bottomSheet fragment for the city to add a new city a the spinner
         textCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showBottomSheetCity();
+                openDialogCity();
+//                showBottomSheetCity();
             }
-        });
+        }); //End of City BottomSheet fragment
 
+//        Opening the bottomSheet fragment for the Hospital to insert new Hospital
         textHospital.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showBottomSheetHospital();
+                openDialogHospital();
+//                showBottomSheetHospital();
             }
-        });
+        }); //En of hospital bottomSheet fragment
 
+        /*
+        Open the bottomSheet fragment for the Services using the textServices to insert new Service of the Hospital
+        **/
         textServices.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showBottomSheetService();
+                openDialogService();
+//                showBottomSheetService();
             }
         });
-
         hideKeyboardSoft();
-
     }
 
     //    Get the cities items using the spinner
@@ -200,6 +198,7 @@ public class NewOpinion extends AppCompatActivity {
         country_name = sessionManager.getUser().getUser_country();
         cityItemsArrayList = new ArrayList<>();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_JSON_GET_CITY, new Response.Listener<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(String response) {
                 Log.v(TAG + " Getting Cities item", response + " City Answers");
@@ -208,11 +207,12 @@ public class NewOpinion extends AppCompatActivity {
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         progressBar.setVisibility(View.GONE);
                         linearSpinnerCity.setVisibility(View.GONE);
-                        showBottomSheetCity();
+                        openDialogCity();
+//                        showBottomSheetCity();
 //                        showMessage("Error while getting City");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            final JSONObject jsonObject = jsonArray.getJSONObject(i);
                             cityItems = new CityItems(
                                     jsonObject.getString("id_city"),
                                     jsonObject.getString("city_name"),
@@ -224,8 +224,22 @@ public class NewOpinion extends AppCompatActivity {
                             spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                    id_city = cityItemsArrayList.get(i).getIdCity();
-                                    city_name = cityItemsArrayList.get(i).getCityName();
+                                    id_city = ((TextView) view.findViewById(R.id.id_city)).getText().toString();
+                                    city_name = ((TextView) view.findViewById(R.id.name_city)).getText().toString();
+//                                    id_city = cityItemsArrayList.get(i).getIdCity();
+//                                    city_name = cityItemsArrayList.get(i).getCityName();
+                                    for (int num = 0; num < cityItemsArrayList.size(); num++) {
+                                        try {
+                                            sessionManager.cityPref(new CityItems(
+                                                    jsonObject.getString("id_city"),
+                                                    jsonObject.getString("city_name"),
+                                                    jsonObject.getString("nom")
+                                            ));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        sessionManager.setLogin(true);
+                                    }
                                     showMessage(id_city + ":::" + city_name);
                                     getHospital(id_city);
                                     linearSpinnerHospital.setVisibility(View.VISIBLE);
@@ -268,6 +282,7 @@ public class NewOpinion extends AppCompatActivity {
     private void getHospital(final String city_id) {
         hospitalItemsArrayList = new ArrayList<>();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_JSON_GET_HOSPITAL, new Response.Listener<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(String response) {
                 editor.putString(Constant.JSON_HOSPITAL, response);
@@ -279,11 +294,13 @@ public class NewOpinion extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         linearSpinnerService.setVisibility(View.GONE);
                         linearSpinnerHospital.setVisibility(View.GONE);
+                        openDialogHospital();
+//                        showBottomSheetHospital();
                         showMessage("Empty Hospital List");
 //                        showMessage("Error while getting Hospital");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            final JSONObject jsonObject = jsonArray.getJSONObject(i);
                             hospitalItems = new HospitalItems(
                                     jsonObject.getString("id_hospital"),
                                     jsonObject.getString("hospital_name"),
@@ -303,6 +320,18 @@ public class NewOpinion extends AppCompatActivity {
                                     id_hospitals = hospitalItemsArrayList.get(i).getIdHospital();
                                     hospital_name = hospitalItemsArrayList.get(i).getHospitalName();
                                     showMessage(id_hospitals + ":::" + hospital_name);
+                                    for (int a = 0; a < cityItemsArrayList.size(); a++) {
+                                        try {
+                                            sessionManager.hospitalPref(new HospitalItems(
+                                                    jsonObject.getString("id_hospital"),
+                                                    jsonObject.getString("hospital_name"),
+                                                    jsonObject.getString("hospital_address")
+                                            ));
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        sessionManager.setLogin(true);
+                                    }
                                     if (id_hospitals != null) {
                                         getServices(id_hospitals);
                                         linearSpinnerService.setVisibility(View.VISIBLE);
@@ -317,16 +346,6 @@ public class NewOpinion extends AppCompatActivity {
 
                                 }
                             });
-//                                if (id_hospitals != null) {
-//                                    getServices(id_hospitals);
-//                                    linearSpinnerService.setVisibility(View.VISIBLE);
-//                                    showMessage("Service list Full");
-//                                }
-//                            } else {
-//                                showMessage("No hospital here first");
-//                                progressBar.setVisibility(View.VISIBLE);
-//                                progressBar.setVisibility(View.GONE);
-//                            }
                         }
                     }
                 } catch (JSONException e) {
@@ -354,6 +373,7 @@ public class NewOpinion extends AppCompatActivity {
     private void getServices(final String hospital_id) {
         serviceItemsArrayList = new ArrayList<>();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_JSON_GET_HOSPITAL_SERVICES, new Response.Listener<String>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onResponse(String response) {
                 editor.putString(Constant.JSON_SERVICES, response);
@@ -364,7 +384,8 @@ public class NewOpinion extends AppCompatActivity {
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         showMessage("Empty Service List");
                         linearSpinnerService.setVisibility(View.GONE);
-                        showBottomSheetService();
+                        openDialogService();
+//                        showBottomSheetService();
 //                        showMessage("Error while getting Service");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -575,7 +596,6 @@ public class NewOpinion extends AppCompatActivity {
      * @showBottomSheetCity this method open the bottomSheet fragment that allow us to add new city
      */
     private void showBottomSheetCity() {
-        FragmentBottomCity sheetCity = new FragmentBottomCity();
         FragmentBottomCity fragmentBottomCity = FragmentBottomCity.newInstance();
         fragmentBottomCity.show(getSupportFragmentManager(), sheetCity.getTag());
     }
@@ -585,13 +605,8 @@ public class NewOpinion extends AppCompatActivity {
      * @showBottomSheetHospital this method open the bottomSheet fragment that allow us to add new hospital
      */
     private void showBottomSheetHospital() {
-        FragmentBottomSheetHospital sheetHospital = new FragmentBottomSheetHospital();
         FragmentBottomSheetHospital fragmentBottomSheetHospital = FragmentBottomSheetHospital.newInstance();
         fragmentBottomSheetHospital.show(getSupportFragmentManager(), sheetHospital.getTag());
-        Bundle bundleHospital = new Bundle();
-        bundleHospital.putString("id_city", id_city);
-        bundleHospital.putString("city_name", city_name);
-        sheetHospital.setArguments(bundleHospital);
     }
 
     /**
@@ -599,12 +614,274 @@ public class NewOpinion extends AppCompatActivity {
      * @showBottomSheetService this method open the bottomSheet fragment that allow us to add new Service
      */
     private void showBottomSheetService() {
-        FragmentBottomSheetService sheetService = new FragmentBottomSheetService();
         FragmentBottomSheetService fragmentBottomSheetService = FragmentBottomSheetService.newInstance();
         fragmentBottomSheetService.show(getSupportFragmentManager(), sheetService.getTag());
-        Bundle bundleService = new Bundle();
-        bundleService.putString("id_hospitals", id_hospitals);
-        bundleService.putString("hospital_name", hospital_name);
-        sheetService.setArguments(bundleService);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void openDialogCity() {
+        final String city_name, id_country, country_name;
+        final EditText edit_city_name;
+        final Button buttonSubmit;
+        final ProgressBar progressBar;
+        ImageButton imageButton;
+        final Dialog dialogCity = new Dialog(this);
+        dialogCity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogCity.setContentView(R.layout.dialog_city);
+        dialogCity.setCancelable(true);
+
+        edit_city_name = dialogCity.findViewById(R.id.edit_city_dialog);
+        buttonSubmit = dialogCity.findViewById(R.id.button_city_dialog);
+        imageButton = dialogCity.findViewById(R.id.bt_close_city_dialog);
+        progressBar = dialogCity.findViewById(R.id.progress_bar_city_dialog);
+        city_name = edit_city_name.getText().toString();
+
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(Objects.requireNonNull(dialogCity.getWindow()).getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogCity.dismiss();
+            }
+        });
+
+        id_country = sessionManager.getUser().getId_Country();
+        country_name = sessionManager.getUser().getUser_country();
+        showMessage(id_country + ":::\n City dialog:::\n" + country_name);
+
+        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkingInternet()) {
+                    if (!city_name.isEmpty(
+
+                    )) {
+                        buttonSubmit.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_CITY, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v(TAG, "Response: " + response);
+                                if (response.trim().equalsIgnoreCase("0")) {
+                                    Log.v(TAG, response);
+                                    progressBar.setVisibility(View.GONE);
+                                    edit_city_name.getText().clear();
+                                    showMessage("City Well Inserted");
+                                    getCities(id_country);
+//                    hideKeyboardSoft();
+                                } else {
+                                    Log.e(TAG, response);
+                                    progressBar.setVisibility(View.GONE);
+                                    showMessage("Error while adding a new City... Try again");
+                                    buttonSubmit.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                getErrors(error);
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> map = new HashMap<>();
+                                map.put("city_name", city_name);
+//                map.put("city_name", cityItems.getCityName());
+                                map.put("id", id_country);
+                                map.put("nom", country_name);
+                                return map;
+                            }
+                        };
+                        getStringRequeue(stringRequest);
+                    } else {
+                        showMessage(getString(R.string.empty_field));
+                    }
+                } else {
+                    showMessage(getString(R.string.check_internet));
+                }
+            }
+        });
+        dialogCity.show();
+        dialogCity.getWindow().setAttributes(layoutParams);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void openDialogHospital() {
+        Bundle bundle = new Bundle();
+        final String id_city, city_name, hospital_name, hospital_address;
+        final EditText edit_name_hospital, edit_hospital_address;
+        final Button buttonSubmit;
+        final ProgressBar progressBar;
+        ImageButton imageButton;
+        final Dialog dialogHospital = new Dialog(this);
+        dialogHospital.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogHospital.setContentView(R.layout.dialog_hospital);
+        dialogHospital.setCancelable(true);
+
+        edit_name_hospital = dialogHospital.findViewById(R.id.edit_hospital_dialog);
+        edit_hospital_address = dialogHospital.findViewById(R.id.edit_hospital_address_dialog);
+        buttonSubmit = dialogHospital.findViewById(R.id.button_hospital_dialog);
+        imageButton = dialogHospital.findViewById(R.id.bt_close_hospital_dialog);
+        progressBar = dialogHospital.findViewById(R.id.progress_bar_hospital_dialog);
+        hospital_name = edit_name_hospital.getText().toString();
+        hospital_address = edit_hospital_address.getText().toString();
+
+//        id_city = bundle.getString("id_city");
+        id_city = sessionManager.getCity().getIdCity();
+        city_name = sessionManager.getCity().getCityName();
+//        city_name = bundle.getString("city_name");
+        showMessage(id_city + " \nHospital Dialog \n" + city_name);
+
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(Objects.requireNonNull(dialogHospital.getWindow()).getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogHospital.dismiss();
+            }
+        });
+
+        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkingInternet()) {
+                    if (!hospital_name.isEmpty()) {
+                        buttonSubmit.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v(TAG, "Response: " + response);
+                                if (response.trim().equalsIgnoreCase("0")) {
+                                    Log.v(TAG, response);
+                                    hideKeyboardSoft();
+                                    progressBar.setVisibility(View.GONE);
+                                    showMessage("Hospital Well Inserted");
+                                    dialogHospital.dismiss();
+                                    getHospital(id_city);
+                                } else {
+                                    Log.e(TAG, response);
+                                    progressBar.setVisibility(View.GONE);
+                                    showMessage("Error while adding a new Hospital... Try Later");
+                                    buttonSubmit.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                getErrors(error);
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> map = new HashMap<>();
+                                map.put("hospital_name", hospital_name);
+                                map.put("hospital_address", hospital_address);
+                                map.put("id_city", id_city);
+                                map.put("city_name", city_name);
+                                return map;
+                            }
+                        };
+                        getStringRequeue(stringRequest);
+                    } else {
+                        showMessage(getString(R.string.empty_field));
+                    }
+                } else {
+                    showMessage(getString(R.string.check_internet));
+                }
+            }
+        });
+        dialogHospital.show();
+        dialogHospital.getWindow().setAttributes(layoutParams);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void openDialogService() {
+        EditText edit_service;
+        final Button buttonSubmit;
+        final String service_name, id_hospital, hospital_name;
+        final ProgressBar progressBar;
+        ImageButton imageButton;
+        final Dialog dialogService = new Dialog(this);
+        dialogService.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogService.setContentView(R.layout.dialog_services);
+        dialogService.setCancelable(true);
+
+        edit_service = dialogService.findViewById(R.id.edit_service_dialog);
+        buttonSubmit = dialogService.findViewById(R.id.button_service_dialog);
+        progressBar = dialogService.findViewById(R.id.progress_bar_service_dialog);
+        imageButton = dialogService.findViewById(R.id.bt_close_service_dialog);
+
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(Objects.requireNonNull(dialogService.getWindow()).getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        id_hospital = sessionManager.getHospital().getIdHospital();
+        hospital_name = sessionManager.getHospital().getHospitalName();
+        service_name = edit_service.getText().toString();
+        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkingInternet()) {
+                    if (!service_name.isEmpty()) {
+                        buttonSubmit.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_HOSPITAL_SERVICES, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v(TAG, "Response: " + response);
+                                if (response.trim().equalsIgnoreCase("0")) {
+                                    Log.v(TAG, response);
+                                    progressBar.setVisibility(View.GONE);
+                                    showMessage("Service Well Inserted");
+                                    getServices(id_hospital);
+//                    hideKeyboardSoft();
+                                } else {
+                                    Log.e(TAG, response);
+                                    progressBar.setVisibility(View.GONE);
+                                    showMessage("Error while adding a new Service... Try Later");
+                                    buttonSubmit.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                getErrors(error);
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> map = new HashMap<>();
+                                map.put("service_name", service_name);
+                                map.put("id_hospital", id_hospital);
+                                map.put("hospital_name", hospital_name);
+                                return map;
+                            }
+                        };
+                        getStringRequeue(stringRequest);
+                    } else {
+                        showMessage(getString(R.string.empty_field));
+                    }
+                } else {
+                    showMessage(getString(R.string.check_internet));
+                }
+            }
+        });
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogService.dismiss();
+            }
+        });
+        dialogService.show();
+        dialogService.getWindow().setAttributes(layoutParams);
     }
 }
