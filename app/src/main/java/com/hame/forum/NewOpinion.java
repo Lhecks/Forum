@@ -86,18 +86,18 @@ public class NewOpinion extends AppCompatActivity {
     private EditText editOpinion;
     private ProgressBar progressBar;
     private RatingBar ratingBar;
-    private CityItems cityItems;
-    private ArrayList<CityItems> cityItemsArrayList;
-    private CustomArrayAdapterCity customArrayAdapterCity;
+    private CityItems cityItems = new CityItems();
+    private HospitalItems hospitalItems = new HospitalItems();
+    private ServiceItems serviceItems = new ServiceItems();
+    private ArrayList<CityItems> cityItemsArrayList = new ArrayList<>();
+    private ArrayList<HospitalItems> hospitalItemsArrayList = new ArrayList<>();
+    private ArrayList<ServiceItems> serviceItemsArrayList = new ArrayList<>();
+    private CustomArrayAdapterCity customArrayAdapterCity = new CustomArrayAdapterCity(getApplicationContext(), R.layout.item_city, cityItemsArrayList);
+    private CustomArrayAdapterHospital customArrayAdapterHospital = new CustomArrayAdapterHospital(getApplicationContext(), R.layout.item_hospital, hospitalItemsArrayList);
+    private CustomArrayAdapterService customArrayAdapterService = new CustomArrayAdapterService(getApplicationContext(), R.layout.item_service_hospital, serviceItemsArrayList);
     private FragmentBottomSheetHospital sheetHospital = new FragmentBottomSheetHospital();
     private FragmentBottomCity sheetCity = new FragmentBottomCity();
     private FragmentBottomSheetService sheetService = new FragmentBottomSheetService();
-    private HospitalItems hospitalItems = new HospitalItems();
-    private ArrayList<HospitalItems> hospitalItemsArrayList;
-    private CustomArrayAdapterHospital customArrayAdapterHospital;
-    private ServiceItems serviceItems;
-    private ArrayList<ServiceItems> serviceItemsArrayList;
-    private CustomArrayAdapterService customArrayAdapterService;
     private String country_name;
     private SessionManager sessionManager;
     private Button buttonSubmit;
@@ -228,21 +228,28 @@ public class NewOpinion extends AppCompatActivity {
                                     city_name = ((TextView) view.findViewById(R.id.name_city)).getText().toString();
 //                                    id_city = cityItemsArrayList.get(i).getIdCity();
 //                                    city_name = cityItemsArrayList.get(i).getCityName();
-                                    for (int num = 0; num < cityItemsArrayList.size(); num++) {
-                                        try {
-                                            sessionManager.cityPref(new CityItems(
-                                                    jsonObject.getString("id_city"),
-                                                    jsonObject.getString("city_name"),
-                                                    jsonObject.getString("nom")
-                                            ));
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
+                                    if (id_city != null) {
+                                        for (int num = 0; num < cityItemsArrayList.size(); num++) {
+                                            try {
+                                                sessionManager.cityPref(new CityItems(
+                                                        jsonObject.getString("id_city"),
+                                                        jsonObject.getString("city_name"),
+                                                        jsonObject.getString("nom")
+                                                ));
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            sessionManager.setLogin(true);
                                         }
-                                        sessionManager.setLogin(true);
+                                        showMessage(id_city + ":::" + city_name);
+                                        getHospital(id_city);
+                                        linearSpinnerHospital.setVisibility(View.VISIBLE);
+                                    } else {
+                                        showMessage("Empty list of City");
+                                        linearSpinnerHospital.setVisibility(View.GONE);
+                                        linearSpinnerHospital.setVisibility(View.GONE);
+                                        openDialogCity();
                                     }
-                                    showMessage(id_city + ":::" + city_name);
-                                    getHospital(id_city);
-                                    linearSpinnerHospital.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
@@ -320,24 +327,27 @@ public class NewOpinion extends AppCompatActivity {
                                     id_hospitals = hospitalItemsArrayList.get(i).getIdHospital();
                                     hospital_name = hospitalItemsArrayList.get(i).getHospitalName();
                                     showMessage(id_hospitals + ":::" + hospital_name);
-                                    for (int a = 0; a < cityItemsArrayList.size(); a++) {
-                                        try {
-                                            sessionManager.hospitalPref(new HospitalItems(
-                                                    jsonObject.getString("id_hospital"),
-                                                    jsonObject.getString("hospital_name"),
-                                                    jsonObject.getString("hospital_address")
-                                            ));
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        sessionManager.setLogin(true);
-                                    }
+
                                     if (id_hospitals != null) {
+                                        for (int a = 0; a < cityItemsArrayList.size(); a++) {
+                                            try {
+                                                sessionManager.hospitalPref(new HospitalItems(
+                                                        jsonObject.getString("id_hospital"),
+                                                        jsonObject.getString("hospital_name"),
+                                                        jsonObject.getString("hospital_address")
+                                                ));
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            sessionManager.setLogin(true);
+                                        }
                                         getServices(id_hospitals);
                                         linearSpinnerService.setVisibility(View.VISIBLE);
                                     } else {
-                                        showMessage("Empty");
+                                        showMessage("Empty list of Hospital");
+                                        linearSpinnerHospital.setVisibility(View.GONE);
                                         linearSpinnerService.setVisibility(View.GONE);
+                                        openDialogHospital();
                                     }
                                 }
 
@@ -620,7 +630,7 @@ public class NewOpinion extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void openDialogCity() {
-        final String city_name, id_country, country_name;
+        final String city_name;
         final EditText edit_city_name;
         final Button buttonSubmit;
         final ProgressBar progressBar;
@@ -634,7 +644,6 @@ public class NewOpinion extends AppCompatActivity {
         buttonSubmit = dialogCity.findViewById(R.id.button_city_dialog);
         imageButton = dialogCity.findViewById(R.id.bt_close_city_dialog);
         progressBar = dialogCity.findViewById(R.id.progress_bar_city_dialog);
-        city_name = edit_city_name.getText().toString();
 
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.copyFrom(Objects.requireNonNull(dialogCity.getWindow()).getAttributes());
@@ -648,17 +657,17 @@ public class NewOpinion extends AppCompatActivity {
             }
         });
 
-        id_country = sessionManager.getUser().getId_Country();
-        country_name = sessionManager.getUser().getUser_country();
-        showMessage(id_country + ":::\n City dialog:::\n" + country_name);
+
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final String id_country = sessionManager.getUser().getId_Country();
+                final String country_name = sessionManager.getUser().getUser_country();
+                final String city_name = edit_city_name.getText().toString();
+                showMessage(id_country + ":::\n City dialog:::\n" + country_name);
                 if (checkingInternet()) {
-                    if (!city_name.isEmpty(
-
-                    )) {
+                    if (!city_name.isEmpty()) {
                         buttonSubmit.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
                         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_INSERT_CITY, new Response.Listener<String>() {
@@ -726,14 +735,9 @@ public class NewOpinion extends AppCompatActivity {
         buttonSubmit = dialogHospital.findViewById(R.id.button_hospital_dialog);
         imageButton = dialogHospital.findViewById(R.id.bt_close_hospital_dialog);
         progressBar = dialogHospital.findViewById(R.id.progress_bar_hospital_dialog);
-        hospital_name = edit_name_hospital.getText().toString();
-        hospital_address = edit_hospital_address.getText().toString();
 
 //        id_city = bundle.getString("id_city");
-        id_city = sessionManager.getCity().getIdCity();
-        city_name = sessionManager.getCity().getCityName();
-//        city_name = bundle.getString("city_name");
-        showMessage(id_city + " \nHospital Dialog \n" + city_name);
+
 
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.copyFrom(Objects.requireNonNull(dialogHospital.getWindow()).getAttributes());
@@ -750,6 +754,11 @@ public class NewOpinion extends AppCompatActivity {
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final String hospital_name = edit_name_hospital.getText().toString();
+                final String hospital_address = edit_hospital_address.getText().toString();
+                final String id_city = sessionManager.getCity().getIdCity();
+                final String city_name = sessionManager.getCity().getCityName();
+                showMessage(id_city + " \nHospital Dialog \n" + city_name);
                 if (checkingInternet()) {
                     if (!hospital_name.isEmpty()) {
                         buttonSubmit.setVisibility(View.GONE);
@@ -803,7 +812,7 @@ public class NewOpinion extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void openDialogService() {
-        EditText edit_service;
+        final EditText edit_service;
         final Button buttonSubmit;
         final String service_name, id_hospital, hospital_name;
         final ProgressBar progressBar;
@@ -823,12 +832,13 @@ public class NewOpinion extends AppCompatActivity {
         layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        id_hospital = sessionManager.getHospital().getIdHospital();
-        hospital_name = sessionManager.getHospital().getHospitalName();
-        service_name = edit_service.getText().toString();
+
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final String id_hospital = sessionManager.getHospital().getIdHospital();
+                final String hospital_name = sessionManager.getHospital().getHospitalName();
+                final String service_name = edit_service.getText().toString();
                 if (checkingInternet()) {
                     if (!service_name.isEmpty()) {
                         buttonSubmit.setVisibility(View.GONE);

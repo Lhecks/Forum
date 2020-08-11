@@ -12,9 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hame.forum.R;
-import com.hame.forum.models.CountryItems;
 import com.hame.forum.models.HospitalItems;
-import com.hame.forum.models.ServiceItems;
 
 import java.util.List;
 
@@ -33,7 +31,7 @@ public class CustomArrayAdapterHospital extends ArrayAdapter<String> {
         itemsListHospitals = objects;
     }
 
-    public void updateServiceItems(List<HospitalItems> hospitalItem) {
+    public void updateHospitalItems(List<HospitalItems> hospitalItem) {
         itemsListHospitals.clear();
         itemsListHospitals.addAll(hospitalItem);
         this.notifyDataSetChanged();

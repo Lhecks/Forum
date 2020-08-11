@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 
 import com.hame.forum.R;
 import com.hame.forum.models.CityItems;
-import com.hame.forum.models.HospitalItems;
-import com.hame.forum.models.ServiceItems;
 
 import java.util.List;
 
@@ -61,6 +59,12 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
         name_city.setText(cityItems.getCityName());
 
         return view;
+    }
+
+    public void updateCityItems(List<CityItems> cityItems) {
+        cityItem.clear();
+        cityItem.addAll(cityItems);
+        this.notifyDataSetChanged();
     }
 
 }

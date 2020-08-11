@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import com.hame.forum.R;
 import com.hame.forum.models.CountryItems;
-
 import java.util.List;
 
 public class CustomArrayAdapter extends ArrayAdapter<String> {
@@ -40,6 +39,12 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
     public @NonNull
     View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         return createItemView(position, convertView, parent);
+    }
+
+    public void updateCountryItems(List<CountryItems> countryItems) {
+        items.clear();
+        items.addAll(countryItems);
+        this.notifyDataSetChanged();
     }
 
     private View createItemView(int position, View convertView, ViewGroup parent) {
