@@ -53,13 +53,13 @@
         <EditText
             android:id="@+id/edit_new_comment"
             style="@style/TextAppearance.AppCompat.Body1"
+            android:background="@drawable/circle_bg_color"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginLeft="6dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="6dp"
             android:autoSizeTextType="uniform"
-            android:background="@drawable/circle_bg_color"
             android:inputType="textLongMessage|text|textMultiLine"
             android:maxLength="500"
             android:padding="2dp" />

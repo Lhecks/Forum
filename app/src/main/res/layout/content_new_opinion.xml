@@ -125,21 +125,17 @@
                 android:layout_marginTop="12dp"
                 android:text="@string/your_opinion" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <EditText
+                android:id="@+id/edit_for_subject_new_opinion"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/circle_bg_color">
-                <EditText
-                    android:id="@+id/edit_for_subject_new_opinion"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="start"
-                    android:inputType="textLongMessage|text|textMultiLine"
-                    android:autofillHints="Add Comment"
-                    android:padding="2dp"
-                    android:maxLength="500" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:autofillHints="Add Comment"
+                android:background="@drawable/circle_bg_color"
+                android:gravity="start"
+                android:inputType="textLongMessage|text|textMultiLine"
+                android:maxLength="300"
+                android:padding="0.5dp" />
 
             <RatingBar
                 android:id="@+id/rating_bar"
