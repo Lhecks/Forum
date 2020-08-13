@@ -33,8 +33,12 @@ public class CustomArrayAdapterService extends ArrayAdapter<String> {
     }
 
     public void updateServiceItems(List<ServiceItems> serviceItems) {
-        itemsServices.clear();
         itemsServices.addAll(serviceItems);
+        this.notifyDataSetChanged();
+    }
+
+    public void clearServiceItems(List<ServiceItems> serviceItems) {
+        itemsServices.clear();
         this.notifyDataSetChanged();
     }
 

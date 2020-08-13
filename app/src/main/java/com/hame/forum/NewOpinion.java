@@ -39,6 +39,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -50,6 +52,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +74,7 @@ import java.util.Objects;
 
 public class NewOpinion extends AppCompatActivity {
     private static final String TAG = NewOpinion.class.getSimpleName();
+    private View parent_view, parent_view_2;
     private SharedPreferences.Editor editor;
     private Spinner spinnerService, spinnerHospital, spinnerCity;
     private EditText editOpinion;
@@ -91,7 +95,9 @@ public class NewOpinion extends AppCompatActivity {
     private String opinion_content, rating, id_city, city_name, id_hospitals,
             hospital_name, id_service, service_name, user_name;
     private LinearLayout linearSpinnerCity, linearSpinnerHospital, linearSpinnerService, layoutHospital, layoutService;
-    private TextView textHospital, textServices;
+    private TextView textHospital, textServices, textCounting;
+    private CardView cardViewSnackBar;
+    private RelativeLayout view_parent;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("CommitPrefEdits")
@@ -109,6 +115,7 @@ public class NewOpinion extends AppCompatActivity {
         TextView textCity = findViewById(R.id.add_city_text);
         textHospital = findViewById(R.id.add_hospital_text);
         textServices = findViewById(R.id.add_service_text);
+        textCounting = findViewById(R.id.text_counting_opinion);
         spinnerCity = findViewById(R.id.spinner_city);
         spinnerHospital = findViewById(R.id.spinner_hospital);
         spinnerService = findViewById(R.id.spinner_service_hospital);
@@ -116,9 +123,14 @@ public class NewOpinion extends AppCompatActivity {
         progressBar = findViewById(R.id.progressbar_for_sending_new_opinion);
         buttonSubmit = findViewById(R.id.button_for_sending_data_new_opinion);
         ratingBar = findViewById(R.id.rating_bar);
+        cardViewSnackBar = findViewById(R.id.card_snack_bar);
         linearSpinnerCity = findViewById(R.id.linear_spinner_city);
         linearSpinnerHospital = findViewById(R.id.linear_spinner_hospital);
         linearSpinnerService = findViewById(R.id.linear_spinner_service);
+        parent_view = findViewById(android.R.id.content);
+        view_parent = findViewById(R.id.relative_view_parent);
+//        parent_view_2 = findViewById(R.id.parent_view_2);
+
 
         final String id_country = sessionManager.getUser().getId_Country();
         if (checkingInternet()) {
@@ -126,6 +138,29 @@ public class NewOpinion extends AppCompatActivity {
         } else {
             showMessage(getString(R.string.check_internet));
         }
+
+        editOpinion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String currentText = editable.toString();
+                int currentLength = currentText.length();
+                if (currentLength < 2) {
+                    textCounting.setText("(" + currentLength + " Character)");
+                } else {
+                    textCounting.setText("(" + currentLength + " Characters)");
+                }
+            }
+        });
 
 //        sendCityItems(bundle);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -170,10 +205,10 @@ public class NewOpinion extends AppCompatActivity {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     if (response.equals("[]") || jsonArray.isNull(0)) {
-//                        spinnerCity.setVisibility(View.GONE);
                         linearSpinnerCity.setVisibility(View.VISIBLE);
-                        openDialogCity();
-//                        showMessage("Error while getting City");
+                        snackBarCity();
+//                        customArrayAdapterCity.updateCityItems(cityItemsArrayList);
+//                        openDialogCity();
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             final JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -210,6 +245,7 @@ public class NewOpinion extends AppCompatActivity {
                                         linearSpinnerHospital.setVisibility(View.GONE);
                                         linearSpinnerHospital.setVisibility(View.GONE);
                                         openDialogCity();
+                                        customArrayAdapterCity.updateCityItems(cityItemsArrayList);
                                     }
                                 }
                                 @Override
@@ -257,7 +293,8 @@ public class NewOpinion extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         linearSpinnerService.setVisibility(View.GONE);
                         linearSpinnerHospital.setVisibility(View.GONE);
-                        openDialogHospital(id_city);
+                        openDialogHospital(id_city, city_name);
+//                        customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
                         showMessage("Empty Hospital List");
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -277,8 +314,6 @@ public class NewOpinion extends AppCompatActivity {
                                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                     id_hospitals = ((TextView) view.findViewById(R.id.id_hospital)).getText().toString();
                                     hospital_name = ((TextView) view.findViewById(R.id.name_hospital)).getText().toString();
-//                                    id_hospitals = hospitalItemsArrayList.get(i).getIdHospital();
-//                                    hospital_name = hospitalItemsArrayList.get(i).getHospitalName();
                                     showMessage(id_hospitals + ":::" + hospital_name);
 
                                     if (id_hospitals != null) {
@@ -300,7 +335,8 @@ public class NewOpinion extends AppCompatActivity {
                                         textHospital.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                                                openDialogHospital(id_city);
+                                                openDialogHospital(id_city, city_name);
+//                                                customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
                                             }
                                         });
                                     } else {
@@ -310,9 +346,11 @@ public class NewOpinion extends AppCompatActivity {
                                         textHospital.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                                                openDialogHospital(id_city);
+                                                openDialogHospital(id_city, city_name);
+//                                                customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
                                             }
                                         });
+                                        customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
                                     }
                                 }
 
@@ -359,7 +397,8 @@ public class NewOpinion extends AppCompatActivity {
                     if (response.equals("[]") || jsonArray.isNull(0)) {
                         showMessage("Empty Service List");
                         linearSpinnerService.setVisibility(View.GONE);
-                        openDialogService(hospital_id);
+                        openDialogService(hospital_id, hospital_name);
+//                        customArrayAdapterService.updateServiceItems(serviceItemsArrayList);
                     } else {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -383,9 +422,11 @@ public class NewOpinion extends AppCompatActivity {
                                     textServices.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            openDialogService(id_hospitals);
+                                            openDialogService(id_hospitals, hospital_name);
+//                                            customArrayAdapterService.updateServiceItems(serviceItemsArrayList);
                                         }
                                     });
+                                    customArrayAdapterService.updateServiceItems(serviceItemsArrayList);
                                 }
                                 @Override
                                 public void onNothingSelected(AdapterView<?> adapterView) {
@@ -470,42 +511,68 @@ public class NewOpinion extends AppCompatActivity {
     }//    End of the sendOpinion method
 
     //    Customizing the SnackBar
-//    private void snackBarFloating() {
-//        final Snackbar snackbar = Snackbar.make(parent_view, "", Snackbar.LENGTH_LONG);
-//        //inflate view
-//        View custom_view = getLayoutInflater().inflate(R.layout.snackbar_toast_floating, null);
-//
-//        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-//        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
-//        snackBarView.setPadding(0, 0, 0, 0);
-//        (custom_view.findViewById(R.id.tv_undo)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                snackbar.dismiss();
-//                Toast.makeText(getApplicationContext(), "UNDO Clicked!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        snackBarView.addView(custom_view, 0);
-//        snackbar.show();
-//    }
-//    public void showSnackBarCustom() {
-//        Snackbar snackbar = Snackbar.make(coordinatorLayout, "This is a SnackBar", Snackbar.LENGTH_INDEFINITE)
-//                .setAction("UNDO", new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Snackbar snackbar1 = Snackbar.make(coordinatorLayout, "Undo successful", Snackbar.LENGTH_SHORT);
-//                        snackbar1.show();
-//                    }
-//                })
-//                .setActionTextColor(Color.RED);
-//        View snackView = snackbar.getView();
-//        TextView textView = snackView.findViewById(android.support.design.R.id.snackbar_text);
-//        textView.setTextColor(Color.YELLOW);
-//        snackbar.show();
-//    }
+    private void snackBarCity() {
+        final Snackbar snackbar = Snackbar.make(view_parent, "", Snackbar.LENGTH_LONG);
+        //inflate view
+        View custom_view = getLayoutInflater().inflate(R.layout.snackbar_city, null);
 
-//    End pf Custom SnackBar
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackBarView.setPadding(0, 0, 0, 0);
+        (custom_view.findViewById(R.id.tv_undo)).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+                openDialogCity();
+//                Toast.makeText(getApplicationContext(), "UNDO Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        snackBarView.addView(custom_view, 0);
+        snackbar.show();
+    }
+
+    private void snackBarHospital() {
+        final Snackbar snackbar = Snackbar.make(view_parent, "", Snackbar.LENGTH_LONG);
+        //inflate view
+        View custom_view = getLayoutInflater().inflate(R.layout.snackbar_hospital, null);
+
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackBarView.setPadding(0, 0, 0, 0);
+        (custom_view.findViewById(R.id.tv_add_new_hospital)).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+//                openDialogHospital();
+//                Toast.makeText(getApplicationContext(), "UNDO Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        snackBarView.addView(custom_view, 0);
+        snackbar.show();
+    }
+
+    private void snackBarService() {
+        final Snackbar snackbar = Snackbar.make(view_parent, "", Snackbar.LENGTH_LONG);
+        //inflate view
+        View custom_view = getLayoutInflater().inflate(R.layout.snackbar_services, null);
+
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        snackBarView.setPadding(0, 0, 0, 0);
+        (custom_view.findViewById(R.id.tv_add_new_service)).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+                Toast.makeText(getApplicationContext(), "UNDO Clicked!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        snackBarView.addView(custom_view, 0);
+        snackbar.show();
+    }//    End pf Custom SnackBar
 
     //    This method handles
     private void getStringRequeue(StringRequest stringRequest) {
@@ -516,6 +583,8 @@ public class NewOpinion extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void openDialogCity() {
+        cityItemsArrayList = new ArrayList<>();
+        customArrayAdapterCity = new CustomArrayAdapterCity(getApplicationContext(), R.layout.item_city, cityItemsArrayList);
         final String id_country;
         final EditText edit_city_name;
         final Button buttonSubmit;
@@ -566,8 +635,9 @@ public class NewOpinion extends AppCompatActivity {
                                     edit_city_name.getText().clear();
                                     showMessage("City Well Inserted");
                                     dialogCity.dismiss();
-                                    getCities(id_country);
-//                    hideKeyboardSoft();
+                                    customArrayAdapterCity.updateCityItems(cityItemsArrayList);
+//                                    getCities(id_country);
+                                    hideKeyboardSoft();
                                 } else {
                                     Log.e(TAG, response);
                                     progressBar.setVisibility(View.GONE);
@@ -605,7 +675,9 @@ public class NewOpinion extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void openDialogHospital(final String city_id) {
+    private void openDialogHospital(final String city_id, final String name_city) {
+        customArrayAdapterHospital = new CustomArrayAdapterHospital(getApplicationContext(), R.layout.item_hospital, hospitalItemsArrayList);
+        spinnerHospital.setAdapter(customArrayAdapterHospital);
         final String id_city, city_name, hospital_name, hospital_address;
         final EditText edit_name_hospital, edit_hospital_address;
         final Button buttonSubmit;
@@ -636,7 +708,7 @@ public class NewOpinion extends AppCompatActivity {
 
         id_city = sessionManager.getCity().getIdCity();
         city_name = sessionManager.getCity().getCityName();
-        showMessage(city_id + " \nHospital Dialog \n" + city_name);
+        showMessage(city_id + " \nHospital Dialog \n" + name_city);
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -659,6 +731,7 @@ public class NewOpinion extends AppCompatActivity {
                                     showMessage("Hospital Well Inserted");
                                     dialogHospital.dismiss();
                                     getHospital(id_city);
+                                    customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
                                 } else {
                                     Log.e(TAG, response);
                                     progressBar.setVisibility(View.GONE);
@@ -678,7 +751,7 @@ public class NewOpinion extends AppCompatActivity {
                                 map.put("hospital_name", hospital_name);
                                 map.put("hospital_address", hospital_address);
                                 map.put("id_city", city_id);
-                                map.put("city_name", city_name);
+                                map.put("city_name", name_city);
                                 return map;
                             }
                         };
@@ -696,7 +769,9 @@ public class NewOpinion extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void openDialogService(final String hospital_id) {
+    private void openDialogService(final String hospital_id, final String hospitals_name) {
+        customArrayAdapterService = new CustomArrayAdapterService(getApplicationContext(), R.layout.item_service_hospital, serviceItemsArrayList);
+        spinnerService.setAdapter(customArrayAdapterService);
         final EditText edit_service;
         final Button buttonSubmit;
         final String id_hospital, hospital_name;
@@ -720,7 +795,7 @@ public class NewOpinion extends AppCompatActivity {
         id_hospital = sessionManager.getHospital().getIdHospital();
         hospital_name = sessionManager.getHospital().getHospitalName();
 
-        showMessage(hospital_id + " ::From Service Dialog:: " + hospital_name);
+        showMessage(hospital_id + " ::From Service Dialog:: " + hospitals_name);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -737,8 +812,9 @@ public class NewOpinion extends AppCompatActivity {
                                     Log.v(TAG, response);
                                     hideKeyboardSoft();
                                     showMessage("Service Well Inserted");
-                                    getServices(id_hospital);
+//                                    getServices(id_hospital);
                                     dialogService.dismiss();
+                                    customArrayAdapterService.updateServiceItems(serviceItemsArrayList);
                                 } else {
                                     Log.e(TAG, response);
                                     progressBar.setVisibility(View.GONE);
@@ -757,7 +833,7 @@ public class NewOpinion extends AppCompatActivity {
                                 Map<String, String> map = new HashMap<>();
                                 map.put("service_name", service_name);
                                 map.put("id_hospital", hospital_id);
-                                map.put("hospital_name", hospital_name);
+                                map.put("hospital_name", hospitals_name);
                                 return map;
                             }
                         };

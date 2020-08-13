@@ -32,8 +32,12 @@ public class CustomArrayAdapterHospital extends ArrayAdapter<String> {
     }
 
     public void updateHospitalItems(List<HospitalItems> hospitalItem) {
-        itemsListHospitals.clear();
         itemsListHospitals.addAll(hospitalItem);
+        this.notifyDataSetChanged();
+    }
+
+    public void clearHospitalItems(List<HospitalItems> hospitalItem) {
+        itemsListHospitals.clear();
         this.notifyDataSetChanged();
     }
 

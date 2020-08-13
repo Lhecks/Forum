@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relative_view_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <ScrollView
@@ -91,7 +92,7 @@
                 android:id="@+id/linear_spinner_service"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="158dp"
                 android:orientation="vertical"
                 android:visibility="gone">
                 <TextView
@@ -119,11 +120,24 @@
                     android:text="@string/add_a_new_service" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/your_opinion" />
+                android:layout_marginTop="@dimen/spacing_large"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/your_opinion" />
+
+                <TextView
+                    android:id="@+id/text_counting_opinion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/spacing_x_medium"
+                    android:text="@string/_300_characters_max" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/edit_for_subject_new_opinion"

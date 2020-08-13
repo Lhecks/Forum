@@ -77,6 +77,7 @@
     <string name="new_city_bottom_sheet">New City</string>
     <string name="close_bottom_sheet_fragment">Image to close the bottomSheet Fragment</string>
     <string name="hospital_name_opinion">Nom de L\'hopital :</string>
+    <string name="_300_characters_max">(300 Characters Max)</string>
     <string-array name="CountriesList">
         <item>Choose Your Country</item>
         <item>Other</item>

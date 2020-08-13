@@ -31,11 +31,11 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
         cityItem = objects;
     }
 
-    public void updateServiceItems(List<CityItems> cityItemsList) {
-        cityItem.clear();
+    public void updateCityItems(List<CityItems> cityItemsList) {
         cityItem.addAll(cityItemsList);
         this.notifyDataSetChanged();
     }
+
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -61,9 +61,8 @@ public class CustomArrayAdapterCity extends ArrayAdapter<String> {
         return view;
     }
 
-    public void updateCityItems(List<CityItems> cityItems) {
+    public void clearItemCity(List<CityItems> cityItems) {
         cityItem.clear();
-        cityItem.addAll(cityItems);
         this.notifyDataSetChanged();
     }
 
