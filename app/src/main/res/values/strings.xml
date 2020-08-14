@@ -69,7 +69,7 @@
     <string name="hospital_already_exist">Hospital already exist</string>
     <string name="service_already_exist">Service already exist</string>
     <string name="hospital_address">hospital address (optional)</string>
-    <string name="add">ADD</string>
+    <string name="add">Ajouter une \n nouvelle Ville </string>
     <string name="ad_text">Click the \"ADD\" button to add anew Item</string>
     <string name="new_hospital_bottom_sheet">New Hospital</string>
     <string name="send_your_request">Send Your Request</string>
