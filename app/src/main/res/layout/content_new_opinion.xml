@@ -92,7 +92,7 @@
                 android:id="@+id/linear_spinner_service"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="158dp"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical"
                 android:visibility="gone">
                 <TextView
@@ -136,6 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/spacing_x_medium"
+                    android:layout_marginStart="@dimen/spacing_x_medium"
                     android:text="@string/_300_characters_max" />
             </LinearLayout>
 
@@ -149,7 +150,10 @@
                 android:gravity="start"
                 android:inputType="textLongMessage|text|textMultiLine"
                 android:maxLength="300"
-                android:padding="0.5dp" />
+                android:paddingLeft="2dp"
+                android:paddingTop="1dp"
+                android:paddingRight="2dp"
+                android:paddingBottom="1dp" />
 
             <RatingBar
                 android:id="@+id/rating_bar"

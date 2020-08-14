@@ -78,6 +78,7 @@
     <string name="close_bottom_sheet_fragment">Image to close the bottomSheet Fragment</string>
     <string name="hospital_name_opinion">Nom de L\'hopital :</string>
     <string name="_300_characters_max">(300 Characters Max)</string>
+    <string name="empty_list">Empty List</string>
     <string-array name="CountriesList">
         <item>Choose Your Country</item>
         <item>Other</item>

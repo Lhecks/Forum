@@ -175,7 +175,6 @@ public class NewOpinion extends AppCompatActivity {
                     } else {
                         showMessage(getString(R.string.empty_field));
                     }
-
                 } else {
                     Snackbar.make(view, getString(R.string.check_internet), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -242,7 +241,6 @@ public class NewOpinion extends AppCompatActivity {
                                         linearSpinnerHospital.setVisibility(View.VISIBLE);
                                     } else {
                                         showMessage("Empty list of City");
-                                        linearSpinnerHospital.setVisibility(View.GONE);
                                         linearSpinnerHospital.setVisibility(View.GONE);
                                         openDialogCity();
                                         customArrayAdapterCity.updateCityItems(cityItemsArrayList);
@@ -416,8 +414,6 @@ public class NewOpinion extends AppCompatActivity {
                                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                     id_service = ((TextView) view.findViewById(R.id.id_service_hospital)).getText().toString();
                                     service_name = ((TextView) view.findViewById(R.id.name_service_hospital)).getText().toString();
-//                                    id_service = String.valueOf(serviceItemsArrayList.get(i).getIdService());
-//                                    service_name = serviceItemsArrayList.get(i).getServiceName();
                                     showMessage(id_service + ":::" + service_name);
                                     textServices.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -453,8 +449,7 @@ public class NewOpinion extends AppCompatActivity {
             }
         };
         getStringRequeue(stringRequest);
-    }
-//    End of th Service Hospitals Spinner
+    }//    End of th Service Hospitals Spinner
 
     //    Method sendOpinion to send the the user request in the opinion table
     private void sendOpinion() {
@@ -580,7 +575,6 @@ public class NewOpinion extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }//    End of
 
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void openDialogCity() {
         cityItemsArrayList = new ArrayList<>();
@@ -636,7 +630,7 @@ public class NewOpinion extends AppCompatActivity {
                                     showMessage("City Well Inserted");
                                     dialogCity.dismiss();
                                     customArrayAdapterCity.updateCityItems(cityItemsArrayList);
-//                                    getCities(id_country);
+                                    getCities(id_country);
                                     hideKeyboardSoft();
                                 } else {
                                     Log.e(TAG, response);
@@ -655,7 +649,6 @@ public class NewOpinion extends AppCompatActivity {
                             protected Map<String, String> getParams() {
                                 Map<String, String> map = new HashMap<>();
                                 map.put("city_name", city_name);
-//                map.put("city_name", cityItems.getCityName());
                                 map.put("id", id_country);
                                 map.put("nom", country_name);
                                 return map;
@@ -707,7 +700,8 @@ public class NewOpinion extends AppCompatActivity {
         });
 
         id_city = sessionManager.getCity().getIdCity();
-        city_name = sessionManager.getCity().getCityName();
+        final String id_country = sessionManager.getUser().getId_Country();
+//        city_name = sessionManager.getCity().getCityName();
         showMessage(city_id + " \nHospital Dialog \n" + name_city);
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -715,7 +709,7 @@ public class NewOpinion extends AppCompatActivity {
             public void onClick(View view) {
                 final String hospital_name = edit_name_hospital.getText().toString();
                 final String hospital_address = edit_hospital_address.getText().toString();
-                showMessage(id_city + " \nHospital Dialog \n" + city_name);
+//                showMessage(id_city + " \nHospital Dialog \n" + city_name);
                 if (checkingInternet()) {
                     if (!hospital_name.isEmpty() && !hospital_name.startsWith(" ") && !hospital_address.startsWith(" ")) {
                         buttonSubmit.setVisibility(View.GONE);
@@ -729,14 +723,19 @@ public class NewOpinion extends AppCompatActivity {
                                     hideKeyboardSoft();
                                     progressBar.setVisibility(View.GONE);
                                     showMessage("Hospital Well Inserted");
-                                    dialogHospital.dismiss();
                                     getHospital(id_city);
-                                    customArrayAdapterHospital.updateHospitalItems(hospitalItemsArrayList);
+                                    customArrayAdapterHospital.addAll();
+                                    customArrayAdapterHospital.notifyDataSetChanged();
+                                    linearSpinnerHospital.setVisibility(View.VISIBLE);
+                                    dialogHospital.dismiss();
                                 } else {
                                     Log.e(TAG, response);
                                     progressBar.setVisibility(View.GONE);
                                     showMessage("Error while adding a new Hospital... Try Later");
                                     buttonSubmit.setVisibility(View.VISIBLE);
+//                                    customArrayAdapterHospital.clearHospitalItems(hospitalItemsArrayList);
+                                    customArrayAdapterHospital.clear();
+                                    linearSpinnerHospital.setVisibility(View.GONE);
                                 }
                             }
                         }, new Response.ErrorListener() {
@@ -795,6 +794,7 @@ public class NewOpinion extends AppCompatActivity {
         id_hospital = sessionManager.getHospital().getIdHospital();
         hospital_name = sessionManager.getHospital().getHospitalName();
 
+        final String id_country = sessionManager.getUser().getId_Country();
         showMessage(hospital_id + " ::From Service Dialog:: " + hospitals_name);
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -812,14 +812,19 @@ public class NewOpinion extends AppCompatActivity {
                                     Log.v(TAG, response);
                                     hideKeyboardSoft();
                                     showMessage("Service Well Inserted");
-//                                    getServices(id_hospital);
+                                    getServices(id_hospital);
+                                    customArrayAdapterService.addAll();
+                                    customArrayAdapterService.notifyDataSetChanged();
+                                    linearSpinnerService.setVisibility(View.VISIBLE);
                                     dialogService.dismiss();
-                                    customArrayAdapterService.updateServiceItems(serviceItemsArrayList);
                                 } else {
                                     Log.e(TAG, response);
                                     progressBar.setVisibility(View.GONE);
                                     showMessage("Error while adding a new Service... Try Later");
                                     buttonSubmit.setVisibility(View.VISIBLE);
+                                    customArrayAdapterService.clear();
+//                                    customArrayAdapterService.clearServiceItems(serviceItemsArrayList);
+                                    linearSpinnerService.setVisibility(View.GONE);
                                 }
                             }
                         }, new Response.ErrorListener() {
@@ -846,7 +851,6 @@ public class NewOpinion extends AppCompatActivity {
                 }
             }
         });
-
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
